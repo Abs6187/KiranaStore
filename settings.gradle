@@ -16,12 +16,6 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
-    // Enable version catalog from gradle/libs.versions.toml
-    versionCatalogs {
-        libs {
-            from(files("gradle/libs.versions.toml"))
-        }
-    }
 }
 
 rootProject.name = "KiranaStoreManager"
