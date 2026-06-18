@@ -43,9 +43,8 @@ rxandroid               = "3.0.2"
 # Note: 1.5.0 introduced high-speed video; 1.4.2 is last well-tested stable.
 camerax                 = "1.4.2"
 
-# ── ML Kit Text Recognition (16.0.0 → 17.3.0 latest stable Aug 2024) ───────
-mlkit-textrecognition   = "17.3.0"
-mlkit-textrecognition-devanagari = "17.3.0"
+mlkit-textrecognition   = "16.0.1"
+mlkit-textrecognition-devanagari = "16.0.1"
 
 # ── Firebase BOM (33.1.0 → 34.15.0 latest Jun 2026) ────────────────────────
 firebase-bom            = "34.15.0"
