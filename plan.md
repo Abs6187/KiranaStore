@@ -152,22 +152,28 @@
 
 ## 8. Firebase & gcloud CLI
 
-| Task | File | Status |
+| Task | File / Resource | Status |
 |------|------|--------|
 | Firestore security rules | `firestore.rules` | ✅ Done |
 | Firebase CLI config | `firebase.json` | ✅ Done |
 | Firestore indexes | `firestore.indexes.json` | ✅ Done |
 | gcloud/Firebase setup (Linux/Mac) | `scripts/setup_firebase.sh` | ✅ Done |
 | gcloud/Firebase setup (Windows) | `scripts/setup_firebase.bat` | ✅ Done |
-| `google-services.json` | Download from Firebase Console | 🔧 **User action** |
+| gcloud CLI Version 573.0.0 | System Installation | ✅ **Installed** |
+| GCP Project Creation | ID: `kirana-store-abs6187` | ✅ **Created & Configured** |
+| `google-services.json` | Download from Firebase Console | 🔧 **User action** (Pending) |
 
-### gcloud CLI Sequence
+### completed gcloud CLI Sequence
 ```bash
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
+# Checked active login (contact2abhaygupta6187@gmail.com)
+gcloud auth list
+
+# Created GCP project
+gcloud projects create kirana-store-abs6187 --name="Kirana Store Manager"
+gcloud config set project kirana-store-abs6187
+
+# Enabled required APIs
 gcloud services enable firebase.googleapis.com firestore.googleapis.com firebaseappcheck.googleapis.com
-firebase login && firebase use YOUR_PROJECT_ID
-firebase deploy --only firestore:rules
 ```
 
 ---
@@ -260,9 +266,10 @@ firebase deploy --only firestore:rules
 | 2 | `local.properties` – add `GEMINI_API_KEY=AIza...` from [AI Studio](https://aistudio.google.com/app/apikey) | 🔧 User | 🔴 Required for voice AI |
 | 3 | **Gradle Sync** – Android Studio → *Sync Project with Gradle Files* | 🔧 User | 🔴 Required |
 | 4 | **Build verify** – `./gradlew :app:assembleDebug` + `:app:testDebugUnitTest` to confirm zero errors | Both | 🟡 After sync |
-| 5 | Unit tests – Room entities, DateConverter, FuzzyMatcher, KiranaAiAgent JSON parse, VoiceManager error map | ✅ Done | — |
-| 6 | Instrumented tests – Room DAOs (incl. cascade) + Espresso Dashboard add-product flow | ✅ Done | — |
-| 7 | `CHANGELOG.md` | ✅ Done | — |
+| 5 | **GitHub Repository Setup** – Created repository `Abs6187/KiranaStore` and pushed code | ✅ Done | — |
+| 6 | Unit tests – Room entities, DateConverter, FuzzyMatcher, KiranaAiAgent JSON parse, VoiceManager error map | ✅ Done | — |
+| 7 | Instrumented tests – Room DAOs (incl. cascade) + Espresso Dashboard add-product flow | ✅ Done | — |
+| 8 | `CHANGELOG.md` | ✅ Done | — |
 
 ### 13a. build-logic Convention Plugins (resolved)
 
