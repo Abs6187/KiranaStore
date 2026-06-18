@@ -21,8 +21,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Generate Gradle Wrapper
-      run: gradle wrapper --gradle-version 8.6
+
 
     - name: Create local.properties
       run: |
