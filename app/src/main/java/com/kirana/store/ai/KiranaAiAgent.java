@@ -146,7 +146,7 @@ public class KiranaAiAgent {
      * @throws org.json.JSONException if the text is not valid JSON
      * @throws IllegalArgumentException if the text is null/blank
      */
-    static ParsedCommand parseResponseJson(String rawJson, String transcript) {
+    static ParsedCommand parseResponseJson(String rawJson, String transcript) throws org.json.JSONException {
         if (rawJson == null || rawJson.isBlank()) {
             throw new IllegalArgumentException("Empty AI response");
         }

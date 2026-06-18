@@ -107,5 +107,9 @@ dependencies {
     androidTestImplementation libs.junit.ext
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.test.runner
-    androidTestImplementation libs.test.rules
 }
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:-unchecked" << "-Xlint:-deprecation"
+}
+

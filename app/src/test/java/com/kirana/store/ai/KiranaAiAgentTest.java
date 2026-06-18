@@ -21,7 +21,7 @@ public class KiranaAiAgentTest {
     private static final String TRANSCRIPT = "mustard oil ka price 175 rupee karo";
 
     @Test
-    public void parsesUpdatePriceCommand() {
+    public void parsesUpdatePriceCommand() throws JSONException {
         String json = "{\"action\":\"update_price\",\"product\":\"Mustard Oil\","
             + "\"price\":175,\"unit\":null,"
             + "\"acknowledgement\":\"Updated Mustard Oil to ₹175.\"}";
@@ -38,7 +38,7 @@ public class KiranaAiAgentTest {
     }
 
     @Test
-    public void parsesAddProductCommandWithUnit() {
+    public void parsesAddProductCommandWithUnit() throws JSONException {
         String json = "{\"action\":\"add_product\",\"product\":\"Atta 5kg\","
             + "\"price\":280,\"unit\":\"5kg\","
             + "\"acknowledgement\":\"Added Atta 5kg at ₹280.\"}";
@@ -54,7 +54,7 @@ public class KiranaAiAgentTest {
     }
 
     @Test
-    public void parsesQueryPriceCommandWithNullPrice() {
+    public void parsesQueryPriceCommandWithNullPrice() throws JSONException {
         String json = "{\"action\":\"query_price\",\"product\":\"Basmati Rice\","
             + "\"price\":null,\"unit\":null}";
 
@@ -67,7 +67,7 @@ public class KiranaAiAgentTest {
     }
 
     @Test
-    public void parsesUnknownAction() {
+    public void parsesUnknownAction() throws JSONException {
         String json = "{\"action\":\"unknown\",\"product\":\"\",\"price\":null,\"unit\":null}";
 
         KiranaAiAgent.ParsedCommand cmd =
@@ -77,7 +77,7 @@ public class KiranaAiAgentTest {
     }
 
     @Test
-    public void missingActionField_defaultsToUnknown() {
+    public void missingActionField_defaultsToUnknown() throws JSONException {
         String json = "{\"product\":\"Sugar\",\"price\":48}";
 
         KiranaAiAgent.ParsedCommand cmd =
@@ -88,7 +88,7 @@ public class KiranaAiAgentTest {
     }
 
     @Test
-    public void missingAcknowledgement_usesDefaultFallback() {
+    public void missingAcknowledgement_usesDefaultFallback() throws JSONException {
         String json = "{\"action\":\"update_price\",\"product\":\"Sugar\",\"price\":48}";
 
         KiranaAiAgent.ParsedCommand cmd =
@@ -99,7 +99,7 @@ public class KiranaAiAgentTest {
     }
 
     @Test
-    public void stripsMarkdownJsonFencing() {
+    public void stripsMarkdownJsonFencing() throws JSONException {
         String fenced = "```json\n"
             + "{\"action\":\"update_price\",\"product\":\"Toor Dal\",\"price\":140}"
             + "\n```";
@@ -113,7 +113,7 @@ public class KiranaAiAgentTest {
     }
 
     @Test
-    public void stripsBareFencing() {
+    public void stripsBareFencing() throws JSONException {
         String fenced = "```\n"
             + "{\"action\":\"update_price\",\"product\":\"Toor Dal\",\"price\":140}"
             + "\n```";
@@ -125,17 +125,17 @@ public class KiranaAiAgentTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void nullInput_throws() {
+    public void nullInput_throws() throws JSONException {
         KiranaAiAgent.parseResponseJson(null, TRANSCRIPT);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void blankInput_throws() {
+    public void blankInput_throws() throws JSONException {
         KiranaAiAgent.parseResponseJson("   ", TRANSCRIPT);
     }
 
     @Test(expected = JSONException.class)
-    public void invalidJson_throws() {
+    public void invalidJson_throws() throws JSONException {
         KiranaAiAgent.parseResponseJson("this is not json at all", TRANSCRIPT);
     }
 }
