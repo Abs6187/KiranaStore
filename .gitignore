@@ -33,3 +33,7 @@ gradle-app.setting
 *.keystore
 *.jks
 key.properties
+
+# Plan / Checklist
+plan.md
+
