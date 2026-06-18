@@ -1,0 +1,13 @@
+// Convention plugin: kirana.android.room
+// Apply with: id("kirana.android.room") in any module that uses Room.
+// Ensures schemaLocation is always set consistently.
+
+android {
+    defaultConfig {
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+}

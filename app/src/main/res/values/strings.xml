@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kirana Store Manager</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_prices">Prices</string>
+    <string name="title_scanner">Scanner</string>
+    <string name="title_history">Price History</string>
+
+    <!-- Voice -->
+    <string name="voice_listening">Listening…</string>
+    <string name="voice_processing">Processing voice command…</string>
+    <string name="voice_error">Could not understand. Please try again.</string>
+    <string name="voice_permission_needed">Microphone permission is needed for voice commands.</string>
+
+    <!-- Add product dialog -->
+    <string name="dialog_add_product">Add New Product</string>
+    <string name="hint_product_name">Product Name *</string>
+    <string name="hint_product_price">Price (₹) *</string>
+    <string name="hint_product_unit">Unit (kg, litre, packet…)</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_update_price">Update Price</string>
+
+    <!-- Scanner -->
+    <string name="scanner_hint">Point camera at a receipt or price tag</string>
+    <string name="scanner_ready">Ready to scan…</string>
+    <string name="scanner_confirm">✅ Apply Detected Prices</string>
+    <string name="scanner_rescan">🔄 Re-scan</string>
+
+    <!-- Common -->
+    <string name="empty_products">No products yet.\nTap ＋ or use the 🎤 voice button to add your first item.</string>
+    <string name="empty_history">No price changes recorded yet.</string>
+    <string name="currency_symbol">₹</string>
+
+    <!-- Permissions -->
+    <string name="perm_camera_rationale">Camera is needed to scan receipts and price tags.</string>
+    <string name="perm_mic_rationale">Microphone is needed for voice price commands.</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_voice_fab">Start voice command</string>
+    <string name="cd_add_product">Add new product</string>
+    <string name="cd_close">Close</string>
+    <string name="cd_pinned">Item is pinned</string>
+</resources>

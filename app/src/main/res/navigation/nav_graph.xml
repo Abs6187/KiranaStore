@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/navigation_dashboard">
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.kirana.store.ui.dashboard.DashboardFragment"
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/navigation_prices"
+        android:name="com.kirana.store.ui.prices.PricesFragment"
+        android:label="Prices"
+        tools:layout="@layout/fragment_prices" />
+
+    <fragment
+        android:id="@+id/navigation_scanner"
+        android:name="com.kirana.store.ui.scanner.ScannerFragment"
+        android:label="Scanner"
+        tools:layout="@layout/fragment_scanner" />
+
+    <fragment
+        android:id="@+id/navigation_history"
+        android:name="com.kirana.store.ui.history.HistoryFragment"
+        android:label="Price History"
+        tools:layout="@layout/fragment_history" />
+
+</navigation>

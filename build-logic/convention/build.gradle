@@ -1,0 +1,14 @@
+// build-logic/convention/build.gradle
+// Convention plugin module – provides reusable Gradle plugins consumed by :app
+// and any future feature modules.
+plugins {
+    id 'groovy-gradle-plugin'
+}
+
+// Convention plugins reference the Android Gradle Plugin DSL (android { ... }),
+// so AGP must be on this module's compile classpath for the precompiled script
+// plugins to type-check. The version is pinned to match the app's AGP.
+dependencies {
+    implementation 'com.android.tools.build:gradle:8.3.2'
+}
+

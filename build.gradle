@@ -1,0 +1,8 @@
+// Root build.gradle – plugin declarations only.
+// All versions are managed in gradle/libs.versions.toml (version catalog).
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library)     apply false
+    alias(libs.plugins.google.gms.services) apply false
+    alias(libs.plugins.google.secrets)      apply false
+}

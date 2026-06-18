@@ -1,0 +1,27 @@
+// Include convention plugins as a composite build (gradle-patterns skill)
+includeBuild("build-logic")
+
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+    // Enable version catalog from gradle/libs.versions.toml
+    versionCatalogs {
+        libs {
+            from(files("gradle/libs.versions.toml"))
+        }
+    }
+}
+
+rootProject.name = "KiranaStoreManager"
+include ':app'

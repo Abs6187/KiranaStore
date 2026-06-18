@@ -1,0 +1,23 @@
+// Convention plugin: kirana.android.application
+// Apply with: id("kirana.android.application") in app/build.gradle
+// Centralises compileSdk, minSdk, Java 17 version, core library desugaring,
+// and ViewBinding in one place so feature modules stay consistent.
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdk 34
+    defaultConfig {
+        minSdk 26
+        targetSdk 34
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
+    }
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+}

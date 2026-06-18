@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary brand: warm saffron/orange (Indian market feel) -->
+    <color name="accent_primary">#FF6B00</color>
+    <color name="accent_primary_variant">#E05A00</color>
+    <color name="on_accent">#FFFFFF</color>
+    <color name="accent_default">#FF6B00</color>
+
+    <!-- Surface / Background (light theme) -->
+    <color name="bg_primary">#F5F5F5</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F0F0F0</color>
+
+    <!-- Text -->
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_hint">#999999</color>
+
+    <!-- Price highlight: vibrant green -->
+    <color name="price_color">#1B7A3A</color>
+
+    <!-- Divider / borders -->
+    <color name="divider">#E0E0E0</color>
+
+    <!-- Status colours -->
+    <color name="color_success">#4CAF50</color>
+    <color name="color_warning">#FF9800</color>
+    <color name="color_error">#F44336</color>
+
+    <!-- Material Design 3 seed colours -->
+    <color name="md_theme_light_primary">#FF6B00</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#FFD9C0</color>
+    <color name="md_theme_light_background">#F5F5F5</color>
+    <color name="md_theme_light_surface">#FFFFFF</color>
+    <color name="md_theme_light_onSurface">#1A1A1A</color>
+
+    <!-- Dark theme -->
+    <color name="md_theme_dark_primary">#FFB87A</color>
+    <color name="md_theme_dark_onPrimary">#5C2900</color>
+    <color name="md_theme_dark_primaryContainer">#7D3B00</color>
+    <color name="md_theme_dark_background">#1A1A1A</color>
+    <color name="md_theme_dark_surface">#2A2A2A</color>
+    <color name="md_theme_dark_onSurface">#E5E5E5</color>
+</resources>

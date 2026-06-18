@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <!-- CameraX Preview -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Semi-transparent overlay with scan frame -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#55000000" />
+
+    <!-- Top controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:background="#88000000">
+
+        <ImageButton
+            android:id="@+id/btn_close"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_close"
+            android:tint="@android:color/white"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Close scanner" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Scan Receipt / Price Tag"
+            android:textColor="@android:color/white"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <View android:layout_width="40dp" android:layout_height="40dp" />
+    </LinearLayout>
+
+    <!-- Hint text -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:text="Point at a price tag or receipt"
+        android:textColor="#CCFFFFFF"
+        android:textSize="14sp"
+        android:gravity="center" />
+
+    <!-- Bottom panel -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="#CC000000">
+
+        <!-- OCR result text -->
+        <TextView
+            android:id="@+id/text_ocr_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ready to scan..."
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:lineSpacingMultiplier="1.4"
+            android:layout_marginBottom="16dp"
+            android:minLines="2" />
+
+        <!-- Confirm scan result -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_confirm_scan"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="✅ Apply Detected Prices"
+            app:backgroundTint="@color/accent_primary"
+            android:textColor="@color/on_accent"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Manual capture trigger -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_capture"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔄 Re-scan"
+            android:textColor="@android:color/white"
+            app:strokeColor="@android:color/white" />
+
+    </LinearLayout>
+
+</FrameLayout>

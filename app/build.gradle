@@ -1,0 +1,112 @@
+// app/build.gradle
+// ALL versions referenced from gradle/libs.versions.toml – never hardcode here.
+// Convention plugins (build-logic/) centralise compileSdk/minSdk/Java 17/ViewBinding
+// and the Room schemaLocation annotation-processor argument.
+plugins {
+    id 'kirana.android.application'
+    id 'kirana.android.room'
+    alias(libs.plugins.google.gms.services)
+    alias(libs.plugins.google.secrets)
+}
+
+android {
+    namespace 'com.kirana.store'
+
+    defaultConfig {
+        applicationId "com.kirana.store"
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['/META-INF/{AL2.0,LGPL2.1}']
+        }
+    }
+}
+
+secrets {
+    propertiesFileName = "local.properties"
+    defaultPropertiesFileName = "local.defaults.properties"
+}
+
+dependencies {
+    // ── Core desugaring ──────────────────────────────────────────────────────
+    coreLibraryDesugaring libs.android.desugar.jdk
+
+    // ── AndroidX Core ────────────────────────────────────────────────────────
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.activity
+    implementation libs.androidx.fragment
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.coordinatorlayout
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.cardview
+    implementation libs.androidx.swiperefreshlayout
+
+    // ── Material Design 3 ────────────────────────────────────────────────────
+    implementation libs.material
+
+    // ── Navigation Component ─────────────────────────────────────────────────
+    implementation libs.navigation.fragment          // 2.9.8
+    implementation libs.navigation.ui               // 2.9.8
+
+    // ── Lifecycle (ViewModel + LiveData + Runtime) ────────────────────────────
+    implementation libs.bundles.lifecycle            // 2.11.0 bundle
+
+    // ── Room Database ────────────────────────────────────────────────────────
+    implementation libs.room.runtime                 // 2.8.4
+    implementation libs.room.rxjava3
+    annotationProcessor libs.room.compiler
+
+    // ── RxJava 3 ─────────────────────────────────────────────────────────────
+    implementation libs.rxjava3
+    implementation libs.rxandroid3
+
+    // ── CameraX (receipt scanner) ─────────────────────────────────────────────
+    implementation libs.bundles.camerax              // 1.4.2 bundle
+
+    // ── ML Kit Text Recognition v2 ────────────────────────────────────────────
+    // Replaces deprecated com.google.firebase:firebase-ml-vision (2018)
+    // Fully on-device – no Firebase project, no network, private.
+    implementation libs.mlkit.text.recognition           // 17.3.0
+    implementation libs.mlkit.text.recognition.devanagari // 17.3.0
+
+    // ── Firebase (free-tier) ──────────────────────────────────────────────────
+    implementation platform(libs.firebase.bom)           // 34.15.0
+    implementation libs.firebase.analytics
+    implementation libs.firebase.firestore
+
+    // ── Firebase AI Logic (Gemini) ────────────────────────────────────────────
+    // Replaces DEPRECATED com.google.ai.client.generativeai:0.9.0 (EOL Nov 2025)
+    // and deprecated firebase-vertexai. New SDK: firebase-ai (BOM-managed).
+    // Supports Gemini 2.0 Flash via developer.generativeai.Provider.
+    implementation libs.firebase.ai
+
+    // ── Utilities ────────────────────────────────────────────────────────────
+    implementation libs.guava.android
+    implementation libs.gson
+    implementation libs.shimmer
+
+    // ── Tests ────────────────────────────────────────────────────────────────
+    testImplementation libs.junit
+    androidTestImplementation libs.junit.ext
+    androidTestImplementation libs.espresso.core
+    androidTestImplementation libs.test.runner
+    androidTestImplementation libs.test.rules
+}

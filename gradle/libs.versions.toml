@@ -1,0 +1,168 @@
+# gradle/libs.versions.toml
+# =============================================================================
+# Kirana Store Manager – Centralised Version Catalog
+# All dependency versions live here. Never hardcode versions in build.gradle.
+# =============================================================================
+
+[versions]
+
+# ── Android Gradle Plugin ────────────────────────────────────────────────────
+agp                     = "8.3.2"
+
+# ── Kotlin / Java ────────────────────────────────────────────────────────────
+desugar-jdk             = "2.0.4"
+
+# ── AndroidX Core ────────────────────────────────────────────────────────────
+appcompat               = "1.7.0"
+core-ktx                = "1.13.1"
+activity                = "1.9.0"
+fragment                = "1.8.0"
+constraintlayout        = "2.1.4"
+coordinatorlayout       = "1.2.0"
+recyclerview            = "1.3.2"
+cardview                = "1.0.0"
+swiperefreshlayout      = "1.1.0"
+
+# ── Material Design 3 ────────────────────────────────────────────────────────
+material                = "1.12.0"
+
+# ── Jetpack Navigation (2.7.7 → 2.9.8 latest stable Jun 2026) ──────────────
+navigation              = "2.9.8"
+
+# ── Jetpack Lifecycle / ViewModel / LiveData (2.8.2 → 2.11.0) ──────────────
+lifecycle               = "2.11.0"
+
+# ── Room Database (2.6.1 → 2.8.4, final stable in 2.x series) ──────────────
+room                    = "2.8.4"
+
+# ── RxJava 3 ────────────────────────────────────────────────────────────────
+rxjava                  = "3.1.8"
+rxandroid               = "3.0.2"
+
+# ── CameraX (1.3.3 → 1.5.x; using 1.4.2 confirmed stable) ──────────────────
+# Note: 1.5.0 introduced high-speed video; 1.4.2 is last well-tested stable.
+camerax                 = "1.4.2"
+
+# ── ML Kit Text Recognition (16.0.0 → 17.3.0 latest stable Aug 2024) ───────
+mlkit-textrecognition   = "17.3.0"
+mlkit-textrecognition-devanagari = "17.3.0"
+
+# ── Firebase BOM (33.1.0 → 34.15.0 latest Jun 2026) ────────────────────────
+firebase-bom            = "34.15.0"
+
+# ── Firebase AI Logic – replaces deprecated generativeai + firebase-vertexai ─
+# com.google.ai.client.generativeai (0.9.0) reached EOL Nov 30, 2025.
+# firebase-vertexai also deprecated. Official replacement: firebase-ai (BOM-managed).
+# No explicit version needed – managed by firebase-bom.
+
+# ── Google Secrets Gradle Plugin ─────────────────────────────────────────────
+secrets-plugin          = "2.0.1"
+
+# ── Google GMS Plugin ────────────────────────────────────────────────────────
+gms-plugin              = "4.4.2"
+
+# ── Guava (Android variant) ──────────────────────────────────────────────────
+guava                   = "33.2.0-android"
+
+# ── Gson ─────────────────────────────────────────────────────────────────────
+gson                    = "2.11.0"
+
+# ── Shimmer ──────────────────────────────────────────────────────────────────
+shimmer                 = "0.5.0"
+
+# ── Test ────────────────────────────────────────────────────────────────────
+junit                   = "4.13.2"
+junit-ext               = "1.1.5"
+espresso                = "3.5.1"
+androidx-test           = "1.6.1"
+
+# =============================================================================
+
+[libraries]
+
+# ── Core Desugaring ──────────────────────────────────────────────────────────
+android-desugar-jdk     = { group = "com.android.tools", name = "desugar_jdk_libs",             version.ref = "desugar-jdk" }
+
+# ── AndroidX ─────────────────────────────────────────────────────────────────
+androidx-appcompat          = { group = "androidx.appcompat",          name = "appcompat",              version.ref = "appcompat" }
+androidx-core-ktx           = { group = "androidx.core",               name = "core-ktx",               version.ref = "core-ktx" }
+androidx-activity           = { group = "androidx.activity",           name = "activity",               version.ref = "activity" }
+androidx-fragment           = { group = "androidx.fragment",           name = "fragment",               version.ref = "fragment" }
+androidx-constraintlayout   = { group = "androidx.constraintlayout",   name = "constraintlayout",       version.ref = "constraintlayout" }
+androidx-coordinatorlayout  = { group = "androidx.coordinatorlayout",  name = "coordinatorlayout",      version.ref = "coordinatorlayout" }
+androidx-recyclerview       = { group = "androidx.recyclerview",       name = "recyclerview",           version.ref = "recyclerview" }
+androidx-cardview           = { group = "androidx.cardview",           name = "cardview",               version.ref = "cardview" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout",     version.ref = "swiperefreshlayout" }
+
+# ── Material ─────────────────────────────────────────────────────────────────
+material                    = { group = "com.google.android.material",  name = "material",               version.ref = "material" }
+
+# ── Navigation ───────────────────────────────────────────────────────────────
+navigation-fragment         = { group = "androidx.navigation",         name = "navigation-fragment",    version.ref = "navigation" }
+navigation-ui               = { group = "androidx.navigation",         name = "navigation-ui",          version.ref = "navigation" }
+
+# ── Lifecycle ────────────────────────────────────────────────────────────────
+lifecycle-viewmodel         = { group = "androidx.lifecycle",          name = "lifecycle-viewmodel",    version.ref = "lifecycle" }
+lifecycle-livedata          = { group = "androidx.lifecycle",          name = "lifecycle-livedata",     version.ref = "lifecycle" }
+lifecycle-runtime           = { group = "androidx.lifecycle",          name = "lifecycle-runtime",      version.ref = "lifecycle" }
+
+# ── Room ─────────────────────────────────────────────────────────────────────
+room-runtime                = { group = "androidx.room",               name = "room-runtime",           version.ref = "room" }
+room-rxjava3                = { group = "androidx.room",               name = "room-rxjava3",           version.ref = "room" }
+room-compiler               = { group = "androidx.room",               name = "room-compiler",          version.ref = "room" }
+
+# ── RxJava ───────────────────────────────────────────────────────────────────
+rxjava3                     = { group = "io.reactivex.rxjava3",        name = "rxjava",                 version.ref = "rxjava" }
+rxandroid3                  = { group = "io.reactivex.rxjava3",        name = "rxandroid",              version.ref = "rxandroid" }
+
+# ── CameraX ──────────────────────────────────────────────────────────────────
+camerax-core                = { group = "androidx.camera",             name = "camera-core",            version.ref = "camerax" }
+camerax-camera2             = { group = "androidx.camera",             name = "camera-camera2",         version.ref = "camerax" }
+camerax-lifecycle           = { group = "androidx.camera",             name = "camera-lifecycle",       version.ref = "camerax" }
+camerax-view                = { group = "androidx.camera",             name = "camera-view",            version.ref = "camerax" }
+
+# ── ML Kit Text Recognition v2 (fully on-device, replaces firebase-ml-vision) ─
+mlkit-text-recognition          = { group = "com.google.mlkit", name = "text-recognition",           version.ref = "mlkit-textrecognition" }
+mlkit-text-recognition-devanagari = { group = "com.google.mlkit", name = "text-recognition-devanagari", version.ref = "mlkit-textrecognition-devanagari" }
+
+# ── Firebase BOM + Services ───────────────────────────────────────────────────
+firebase-bom                = { group = "com.google.firebase",         name = "firebase-bom",           version.ref = "firebase-bom" }
+firebase-analytics          = { group = "com.google.firebase",         name = "firebase-analytics" }
+firebase-firestore          = { group = "com.google.firebase",         name = "firebase-firestore" }
+
+# ── Firebase AI Logic (replaces deprecated generativeai:0.9.0 + firebase-vertexai)
+# EOL notice: com.google.ai.client.generativeai support ended Nov 30, 2025.
+# New SDK: firebase-ai, managed by firebase-bom, supports Gemini 2.0 Flash.
+firebase-ai                 = { group = "com.google.firebase",         name = "firebase-ai" }
+
+# ── Utilities ────────────────────────────────────────────────────────────────
+guava-android               = { group = "com.google.guava",            name = "guava",                  version.ref = "guava" }
+gson                        = { group = "com.google.code.gson",        name = "gson",                   version.ref = "gson" }
+shimmer                     = { group = "com.facebook.shimmer",        name = "shimmer",                version.ref = "shimmer" }
+
+# ── Test ─────────────────────────────────────────────────────────────────────
+junit                       = { group = "junit",                       name = "junit",                  version.ref = "junit" }
+junit-ext                   = { group = "androidx.test.ext",           name = "junit",                  version.ref = "junit-ext" }
+espresso-core               = { group = "androidx.test.espresso",      name = "espresso-core",          version.ref = "espresso" }
+test-runner                 = { group = "androidx.test",               name = "runner",                 version.ref = "androidx-test" }
+test-rules                 = { group = "androidx.test",               name = "rules",                  version.ref = "androidx-test" }
+
+# =============================================================================
+
+[plugins]
+android-application         = { id = "com.android.application",                                    version.ref = "agp" }
+android-library             = { id = "com.android.library",                                        version.ref = "agp" }
+google-gms-services         = { id = "com.google.gms.google-services",                             version.ref = "gms-plugin" }
+google-secrets              = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets-plugin" }
+
+# =============================================================================
+
+[bundles]
+# Convenience bundle: all CameraX artifacts together
+camerax                     = ["camerax-core", "camerax-camera2", "camerax-lifecycle", "camerax-view"]
+
+# Convenience bundle: Lifecycle ViewModel + LiveData + Runtime
+lifecycle                   = ["lifecycle-viewmodel", "lifecycle-livedata", "lifecycle-runtime"]
+
+# Convenience bundle: Firebase core services
+firebase-core               = ["firebase-analytics", "firebase-firestore", "firebase-ai"]

@@ -1,0 +1,35 @@
+# Android build artefacts
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Sensitive – never commit
+google-services.json
+local.properties
+
+# Gradle
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# Kotlin
+*.kotlin_module
+
+# IDEs
+.idea/
+*.iml
+
+# MacOS
+.DS_Store
+
+# Secrets
+*.keystore
+*.jks
+key.properties
