@@ -1,6 +1,3 @@
-// Include convention plugins as a composite build (gradle-patterns skill)
-includeBuild("build-logic")
-
 pluginManagement {
     repositories {
         google()
@@ -8,6 +5,10 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+// Include convention plugins as a composite build (gradle-patterns skill)
+includeBuild("build-logic")
+
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
