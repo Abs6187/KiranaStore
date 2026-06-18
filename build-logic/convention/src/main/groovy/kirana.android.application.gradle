@@ -2,8 +2,9 @@
 // Apply with: id("kirana.android.application") in app/build.gradle
 // Centralises compileSdk, minSdk, Java 17 version, core library desugaring,
 // and ViewBinding in one place so feature modules stay consistent.
-
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
     compileSdk 34
