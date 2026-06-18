@@ -5,10 +5,13 @@ plugins {
     id 'groovy-gradle-plugin'
 }
 
-// Convention plugins reference the Android Gradle Plugin DSL (android { ... }),
-// so AGP must be on this module's compile classpath for the precompiled script
-// plugins to type-check. The version is pinned to match the app's AGP.
+repositories {
+    google()
+    mavenCentral()
+}
+
 dependencies {
     implementation 'com.android.tools.build:gradle:8.3.2'
 }
+
 
