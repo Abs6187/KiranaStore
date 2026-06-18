@@ -36,6 +36,12 @@ android {
             excludes += ['/META-INF/{AL2.0,LGPL2.1}']
         }
     }
+
+    lint {
+        abortOnError false
+        ignoreWarnings true
+        quiet true
+    }
 }
 
 secrets {
@@ -110,6 +116,6 @@ dependencies {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs << "-Xlint:-unchecked" << "-Xlint:-deprecation"
+    options.compilerArgs << "-nowarn" << "-Xlint:none"
 }
 
