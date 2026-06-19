@@ -60,6 +60,17 @@
                 app:iconPadding="0dp"
                 app:cornerRadius="24dp"
                 app:backgroundTint="@color/accent_primary" />
+
+            <ImageButton
+                android:id="@+id/btn_settings"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_settings"
+                android:tint="@color/text_secondary"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_settings"
+                android:layout_marginStart="8dp" />
         </LinearLayout>
 
         <!-- Search Bar -->

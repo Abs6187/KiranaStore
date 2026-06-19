@@ -18,7 +18,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.mlkit.common.MlKitException;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
@@ -32,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,17 +43,21 @@ import java.util.regex.Pattern;
  * Receipt Scanner using CameraX (real-time preview) + ML Kit Text Recognition v2.
  * <p>
  * Replaces the legacy {@code firebase-ml-vision} API (deprecated) with the modern
- * standalone {@code com.google.mlkit:text-recognition:16.0.0} which is:
+ * standalone {@code com.google.mlkit:text-recognition:17.3.0} which is:
  *   ✅ Fully on-device (private, no cloud round-trip)
  *   ✅ No Firebase project required
  *   ✅ Supports Latin + Devanagari (Hindi script) scripts
  * <p>
+ * Model is downloaded lazily by Google Play Services on first {@code process()} call.
+ * This fragment gracefully handles the download-wait state instead of appearing frozen.
+ * <p>
  * Flow:
- *   1. CameraX preview feeds into ImageAnalysis
- *   2. ML Kit OCR extracts text blocks from every frame
- *   3. TextProcessor parses price patterns (₹ digits, digits + /kg etc.)
- *   4. Results displayed in a bottom sheet for user confirmation
- *   5. On confirm → ProductRepository.updatePrice(source="ocr_scan")
+ *   1. Check Google Play Services availability
+ *   2. CameraX preview feeds into ImageAnalysis
+ *   3. ML Kit OCR extracts text blocks from every frame
+ *   4. TextProcessor parses price patterns (₹ digits, digits + /kg etc.)
+ *   5. Results displayed in a bottom sheet for user confirmation
+ *   6. On confirm → ProductRepository.updatePrice(source="ocr_scan")
  */
 public class ScannerFragment extends Fragment {
 
@@ -59,7 +67,9 @@ public class ScannerFragment extends Fragment {
     private DashboardViewModel viewModel;
     private ExecutorService cameraExecutor;
     private TextRecognizer textRecognizer;
-    private boolean isAnalysing = true;
+    private volatile boolean isAnalysing = true;
+    private final AtomicBoolean isProcessingFrame = new AtomicBoolean(false);
+    private int modelDownloadRetries = 0;
 
     // Price pattern: matches "₹175", "Rs.175", "175/-", "175.00", "175 rupees"
     private static final Pattern PRICE_PATTERN =
@@ -82,13 +92,36 @@ public class ScannerFragment extends Fragment {
 
         cameraExecutor = Executors.newSingleThreadExecutor();
 
-        // Initialise modern ML Kit TextRecognizer (Latin script – includes English, digits)
-        textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+        // ── Check Google Play Services before touching CameraX / ML Kit ──
+        int playServices = GoogleApiAvailability.getInstance()
+            .isGooglePlayServicesAvailable(requireContext());
+        if (playServices != ConnectionResult.SUCCESS) {
+            String msg = GoogleApiAvailability.getInstance()
+                .getErrorString(playServices);
+            binding.textOcrResult.setText("⚠️ Google Play Services error: " + msg
+                + "\n\nOCR scanning requires up-to-date Play Services.");
+            binding.btnConfirmScan.setVisibility(View.GONE);
+            binding.btnCapture.setVisibility(View.GONE);
+            Log.e(TAG, "Play Services not available: " + msg);
+            return;
+        }
+
+        // ── Initialise ML Kit TextRecognizer ──
+        try {
+            textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+        } catch (Exception e) {
+            binding.textOcrResult.setText("⚠️ OCR engine failed to initialise: "
+                + e.getMessage());
+            binding.btnCapture.setVisibility(View.GONE);
+            Log.e(TAG, "TextRecognizer init failed", e);
+            return;
+        }
 
         startCamera();
 
         binding.btnCapture.setOnClickListener(v -> {
             isAnalysing = true;
+            modelDownloadRetries = 0;
             binding.textOcrResult.setText("Scanning...");
         });
 
@@ -106,6 +139,8 @@ public class ScannerFragment extends Fragment {
                 bindCameraUseCases(cameraProvider);
             } catch (ExecutionException | InterruptedException e) {
                 Log.e(TAG, "Camera init error: " + e.getMessage());
+                requireActivity().runOnUiThread(() ->
+                    binding.textOcrResult.setText("⚠️ Camera failed to start: " + e.getMessage()));
             }
         }, ContextCompat.getMainExecutor(requireContext()));
     }
@@ -127,11 +162,12 @@ public class ScannerFragment extends Fragment {
 
     @androidx.camera.core.ExperimentalGetImage
     private void analyseImage(ImageProxy imageProxy) {
-        if (!isAnalysing) {
+        if (!isAnalysing || isProcessingFrame.getAndSet(true)) {
             imageProxy.close();
             return;
         }
         if (imageProxy.getImage() == null) {
+            isProcessingFrame.set(false);
             imageProxy.close();
             return;
         }
@@ -141,13 +177,51 @@ public class ScannerFragment extends Fragment {
 
         textRecognizer.process(inputImage)
             .addOnSuccessListener(visionText -> {
+                isProcessingFrame.set(false);
                 processOcrResult(visionText);
                 imageProxy.close();
             })
             .addOnFailureListener(e -> {
-                Log.e(TAG, "OCR failed: " + e.getMessage());
+                isProcessingFrame.set(false);
+                handleOcrFailure(e);
                 imageProxy.close();
             });
+    }
+
+    /**
+     * Handle ML Kit failure — especially the first-launch model download.
+     * <p>
+     * Code 14 = "waiting for the text recognition model to be downloaded".
+     * We show a helpful status and auto-retry on the next frame.
+     */
+    private void handleOcrFailure(@NonNull Exception e) {
+        if (e instanceof MlKitException) {
+            int code = ((MlKitException) e).getErrorCode();
+            if (code == 14) {
+                // Model still downloading — keep scanning, it'll succeed once ready.
+                modelDownloadRetries++;
+                if (modelDownloadRetries <= 5 || modelDownloadRetries % 10 == 0) {
+                    requireActivity().runOnUiThread(() ->
+                        binding.textOcrResult.setText(
+                            "⏳ Downloading OCR model… auto-retrying"));
+                }
+                Log.i(TAG, "OCR model downloading (retry #" + modelDownloadRetries + ")");
+                return;
+            }
+            if (code == 9 || code == 13) {
+                // Model unavailable or unsupported device.
+                requireActivity().runOnUiThread(() -> {
+                    binding.textOcrResult.setText(
+                        "⚠️ OCR model unavailable on this device.\n"
+                            + "Try updating Google Play Services.");
+                    isAnalysing = false;
+                });
+                Log.e(TAG, "OCR model unavailable: code " + code);
+                return;
+            }
+        }
+        Log.e(TAG, "OCR processing error: " + e.getMessage());
+        // For transient errors, keep trying — don't stall the scanner.
     }
 
     private void processOcrResult(Text visionText) {

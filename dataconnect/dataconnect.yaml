@@ -1,0 +1,18 @@
+# Kirana Store — Firebase Data Connect (SQL Connect)
+# Service config: tells the Firebase CLI which service/location to target.
+# Project: kirana-store-abs6187
+# Service: kirana-connect
+# Location: us-central1 (free Cloud SQL trial region)
+
+specVersion: "v1alpha"
+serviceId: "kirana-connect"
+location: "us-central1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "kiranadb"
+      cloudSql:
+        instanceId: "kirana-pg"   # Cloud SQL instance will be created in the console
+connectorDirs:
+  - "./connectors"

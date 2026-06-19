@@ -1,0 +1,54 @@
+# dataconnect/connectors/queries.gql
+# All READ operations used by the Android app.
+
+# ── Get all products (ordered: pinned first, then by name) ──────────────────
+query ListProducts @auth(level: PUBLIC) {
+  products(orderBy: [{ isPinned: DESC }, { name: ASC }]) {
+    id
+    name
+    currentPrice
+    unit
+    isPinned
+    updatedAt
+  }
+}
+
+# ── Search products by name (case-insensitive contains) ─────────────────────
+query SearchProducts($query: String!) @auth(level: PUBLIC) {
+  products(where: { name: { contains: $query, mode: INSENSITIVE } }) {
+    id
+    name
+    currentPrice
+    unit
+    isPinned
+  }
+}
+
+# ── Last 50 price changes ────────────────────────────────────────────────────
+query ListPriceHistory @auth(level: PUBLIC) {
+  priceHistories(orderBy: [{ changedAt: DESC }], limit: 50) {
+    id
+    product { name }
+    oldPrice
+    newPrice
+    source
+    note
+    changedAt
+  }
+}
+
+# ── Price history for a single product ──────────────────────────────────────
+query GetProductHistory($productId: UUID!) @auth(level: PUBLIC) {
+  priceHistories(
+    where: { productId: { eq: $productId } }
+    orderBy: [{ changedAt: DESC }]
+    limit: 20
+  ) {
+    id
+    oldPrice
+    newPrice
+    source
+    note
+    changedAt
+  }
+}

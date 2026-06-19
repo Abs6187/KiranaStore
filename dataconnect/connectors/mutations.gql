@@ -1,0 +1,54 @@
+# dataconnect/connectors/mutations.gql
+# All WRITE operations used by the Android app.
+
+# ── Add a new product ────────────────────────────────────────────────────────
+mutation AddProduct(
+  $name: String!,
+  $currentPrice: Float!,
+  $unit: String
+) @auth(level: PUBLIC) {
+  product_insert(data: {
+    name: $name,
+    currentPrice: $currentPrice,
+    unit: $unit,
+    isPinned: false
+  })
+}
+
+# ── Update product price (returns updated row for history recording) ─────────
+mutation UpdateProductPrice(
+  $id: UUID!,
+  $newPrice: Float!
+) @auth(level: PUBLIC) {
+  product_update(id: $id, data: {
+    currentPrice: $newPrice,
+    updatedAt_expr: "request.time"
+  })
+}
+
+# ── Toggle pin ───────────────────────────────────────────────────────────────
+mutation TogglePin($id: UUID!, $isPinned: Boolean!) @auth(level: PUBLIC) {
+  product_update(id: $id, data: { isPinned: $isPinned })
+}
+
+# ── Delete product (cascades price_history via FK) ───────────────────────────
+mutation DeleteProduct($id: UUID!) @auth(level: PUBLIC) {
+  product_delete(id: $id)
+}
+
+# ── Record a price change in price_history ───────────────────────────────────
+mutation AddPriceHistory(
+  $productId: UUID!,
+  $oldPrice: Float!,
+  $newPrice: Float!,
+  $source: String!,
+  $note: String
+) @auth(level: PUBLIC) {
+  priceHistory_insert(data: {
+    productId: $productId,
+    oldPrice: $oldPrice,
+    newPrice: $newPrice,
+    source: $source,
+    note: $note
+  })
+}

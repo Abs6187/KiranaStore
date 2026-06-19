@@ -20,12 +20,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.kirana.store.BuildConfig;
 import com.kirana.store.R;
+import com.kirana.store.ai.GeminiConfig;
 import com.kirana.store.ai.KiranaAiAgent;
 import com.kirana.store.data.repository.ProductRepository;
 import com.kirana.store.databinding.ActivityMainBinding;
 import com.kirana.store.ui.dashboard.DashboardViewModel;
+import com.kirana.store.util.AppPreferences;
 import com.kirana.store.util.FuzzyMatcher;
 import com.kirana.store.voice.VoiceManager;
 
@@ -99,9 +100,10 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
 
         NavigationUI.setupWithNavController(bottomNav, navController);
 
-        // Hide bottom nav on scanner screen (full-screen camera)
+        // Hide bottom nav + voice FAB on scanner and settings screens
         navController.addOnDestinationChangedListener((ctrl, dest, args) -> {
-            if (dest.getId() == R.id.navigation_scanner) {
+            if (dest.getId() == R.id.navigation_scanner
+                    || dest.getId() == R.id.navigation_settings) {
                 binding.bottomNavigation.setVisibility(View.GONE);
                 binding.fabVoice.hide();
             } else {
@@ -115,11 +117,16 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
         voiceManager = new VoiceManager(this);
         voiceManager.init(this);
 
-        String apiKey = BuildConfig.GEMINI_API_KEY;
-        if (apiKey != null && !apiKey.isEmpty() && !apiKey.equals("YOUR_GEMINI_API_KEY")) {
-            aiAgent = new KiranaAiAgent(apiKey);
+        // KiranaAiAgent now uses the googleAI backend via GeminiConfig; no inline key.
+        if (GeminiConfig.isConfigured(this)) {
+            try {
+                aiAgent = new KiranaAiAgent(this);
+            } catch (IllegalStateException e) {
+                Log.w(TAG, "Gemini agent init failed: " + e.getMessage());
+            }
         } else {
-            Log.w(TAG, "Gemini API key not configured. AI voice parsing disabled.");
+            Log.w(TAG, "Gemini API key not configured. AI voice parsing disabled. " +
+                "Add a key in Settings → Gemini API Key.");
         }
     }
 

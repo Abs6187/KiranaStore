@@ -1,3 +1,28 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    // ── Java language server ────────────────────────────────────────────────
+    // Auto-sync: picks up Gradle changes (Gradle 8.9 wrapper) without prompting.
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+
+    // Exclude only the build-logic Groovy module and Gradle cache from the
+    // Java LS — NOT the app's own build/ folder (generated sources live there).
+    "java.import.exclusions": [
+        "**/build-logic/**",
+        "**/.gradle/**"
+    ],
+
+    // ── GitHub Actions extension ────────────────────────────────────────────
+    // Suppresses offline "Unable to resolve action" false positives.
+    "github-actions.workflows.pinned.enabled": false,
+
+    // ── YAML language server ────────────────────────────────────────────────
+    // Suppress schema-driven errors for GitHub Actions workflow files only.
+    "yaml.schemas": {
+        "none": [
+            ".github/workflows/*.yml",
+            ".github/workflows/*.yaml"
+        ]
+    },
+    "yaml.validate": false
 }
+

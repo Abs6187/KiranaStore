@@ -1,6 +1,9 @@
 // build-logic/convention/build.gradle
 // Convention plugin module – provides reusable Gradle plugins consumed by :app
 // and any future feature modules.
+//
+// Java 22 compatibility: Gradle 8.9 (gradle-wrapper.properties) bundles a
+// Groovy version that supports Java 22. No toolchain pin needed.
 plugins {
     id 'groovy-gradle-plugin'
 }
@@ -11,7 +14,5 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.android.tools.build:gradle:8.3.2'
+    implementation 'com.android.tools.build:gradle:8.5.2'
 }
-
-

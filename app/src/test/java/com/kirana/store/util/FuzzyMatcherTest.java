@@ -82,8 +82,7 @@ public class FuzzyMatcherTest {
 
     @Test
     public void levenshtein_singleSubstitutionIsOne() {
-        assertEquals(1, FuzzyMatcher.levenshtein("dal", "dal".replace('a', 'a')));
-        assertEquals(1, FuzzyMatcher.levenshtein("dal", "dal")); // sanity
+        assertEquals(1, FuzzyMatcher.levenshtein("dal", "dal".replace('a', 'e')));
         // one substitution: 'dal' -> 'dal' is 0; 'dal' -> 'pal' is 1
         assertEquals(1, FuzzyMatcher.levenshtein("dal", "pal"));
     }

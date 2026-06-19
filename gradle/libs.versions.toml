@@ -7,7 +7,7 @@
 [versions]
 
 # ── Android Gradle Plugin ────────────────────────────────────────────────────
-agp                     = "8.3.2"
+agp                     = "8.5.2"
 
 # ── Kotlin / Java ────────────────────────────────────────────────────────────
 desugar-jdk             = "2.0.4"
@@ -133,6 +133,10 @@ firebase-firestore          = { group = "com.google.firebase",         name = "f
 # EOL notice: com.google.ai.client.generativeai support ended Nov 30, 2025.
 # New SDK: firebase-ai, managed by firebase-bom, supports Gemini 2.0 Flash.
 firebase-ai                 = { group = "com.google.firebase",         name = "firebase-ai" }
+
+# ── Firebase Data Connect (SQL Connect – managed PostgreSQL + GraphQL SDK) ───
+# BOM-managed; no explicit version needed.
+firebase-dataconnect        = { group = "com.google.firebase",         name = "firebase-dataconnect" }
 
 # ── Utilities ────────────────────────────────────────────────────────────────
 guava-android               = { group = "com.google.guava",            name = "guava",                  version.ref = "guava" }

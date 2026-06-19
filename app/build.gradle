@@ -103,6 +103,12 @@ dependencies {
     // Supports Gemini 2.0 Flash via developer.generativeai.Provider.
     implementation libs.firebase.ai
 
+    // ── Firebase Data Connect (SQL Connect – PostgreSQL cloud sync) ───────────
+    // Generated Kotlin SDK + coroutines bridge. BOM-managed version.
+    implementation libs.firebase.dataconnect
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1'
+
     // ── Utilities ────────────────────────────────────────────────────────────
     implementation libs.guava.android
     implementation libs.gson
@@ -110,6 +116,7 @@ dependencies {
 
     // ── Tests ────────────────────────────────────────────────────────────────
     testImplementation libs.junit
+    testImplementation 'org.json:json:20240303'
     androidTestImplementation libs.junit.ext
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.test.runner

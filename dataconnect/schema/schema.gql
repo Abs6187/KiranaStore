@@ -1,0 +1,29 @@
+# dataconnect/schema/schema.gql
+# Kirana Store Manager — Firebase Data Connect Schema
+# Maps 1-to-1 with the Room tables so cloud sync is a drop-in layer.
+#
+# Firebase Data Connect compiles this GraphQL schema to PostgreSQL DDL
+# and generates the typed Android SDK.
+
+# ─── Product ─────────────────────────────────────────────────────────────────
+type Product @table(name: "products", singular: "product", plural: "products") {
+  id:           UUID!        @default(expr: "uuidV4()")
+  name:         String!
+  currentPrice: Float!
+  unit:         String
+  isPinned:     Boolean!     @default(expr: "false")
+  createdAt:    Timestamp!   @default(expr: "request.time")
+  updatedAt:    Timestamp!   @default(expr: "request.time")
+}
+
+# ─── PriceHistory ─────────────────────────────────────────────────────────────
+type PriceHistory @table(name: "price_history", singular: "priceHistory", plural: "priceHistories") {
+  id:         UUID!      @default(expr: "uuidV4()")
+  product:    Product!   @relation(fields: ["productId"], references: ["id"])
+  productId:  UUID!
+  oldPrice:   Float!
+  newPrice:   Float!
+  source:     String!    # "voice" | "ocr_scan" | "manual"
+  note:       String
+  changedAt:  Timestamp! @default(expr: "request.time")
+}

@@ -1,11 +1,10 @@
 # Android build artefacts
 *.iml
 .gradle
-/local.properties
-/.idea
 .DS_Store
-/build
-/captures
+build/
+bin/
+captures/
 .externalNativeBuild
 .cxx
 local.properties

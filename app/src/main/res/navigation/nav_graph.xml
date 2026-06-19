@@ -30,4 +30,10 @@
         android:label="Price History"
         tools:layout="@layout/fragment_history" />
 
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.kirana.store.ui.settings.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
+
 </navigation>

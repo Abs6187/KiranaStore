@@ -26,6 +26,9 @@
     <color name="color_success">#4CAF50</color>
     <color name="color_warning">#FF9800</color>
     <color name="color_error">#F44336</color>
+    <!-- Aliases used by SettingsFragment diagnostics UI -->
+    <color name="status_success">#4CAF50</color>
+    <color name="status_error">#F44336</color>
 
     <!-- Material Design 3 seed colours -->
     <color name="md_theme_light_primary">#FF6B00</color>

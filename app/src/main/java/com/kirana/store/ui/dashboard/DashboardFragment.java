@@ -114,6 +114,11 @@ public class DashboardFragment extends Fragment {
 
     private void setupAddButton() {
         binding.fabAddProduct.setOnClickListener(v -> showAddProductDialog("", 0, ""));
+
+        // Gear icon → navigate to Settings screen
+        binding.btnSettings.setOnClickListener(v ->
+            androidx.navigation.Navigation.findNavController(v)
+                .navigate(R.id.navigation_settings));
     }
 
     private void showAddProductDialog(String prefillName, double prefillPrice, String prefillUnit) {

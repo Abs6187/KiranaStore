@@ -9,7 +9,69 @@ All prices in the product are in **Indian Rupees (₹)**.
 
 ---
 
+## [1.1.0] – 2026-06-19
+
+### Added – KiranaAiAgent googleAI() backend (Phase 2)
+- `ai/GeminiConfig.java` — utility class that creates a secondary `FirebaseApp` named
+  `"gemini"` whose API key is the Gemini Developer key (free tier). Resolves the runtime
+  Gemini key override from `AppPreferences` first, falling back to
+  `BuildConfig.GEMINI_API_KEY`.
+- `KiranaAiAgent` now calls `FirebaseAI.getInstance(geminiApp, GenerativeBackend.googleAI())`
+  instead of the old `FirebaseAI.getInstance()` path which silently resolved to the paid
+  Vertex AI backend. The `Content` object is constructed via `new Content.Builder().addText()`
+  (correct API) rather than the deprecated `Content.text()` static factory.
+- `SettingsFragment.testGeminiConnection()` wires up the "Test Gemini Connection" button to
+  call `KiranaAiAgent` with a ping and report success/failure in colour.
+
+### Added – ScannerFragment robustness (Phase 3)
+- **Google Play Services check** on `onViewCreated`: if `isGooglePlayServicesAvailable()`
+  ≠ `SUCCESS`, the fragment shows an error message and hides the camera buttons instead
+  of crashing or silently failing.
+- **Model-download retry**: `MlKitException` code 14 ("model downloading") is caught in
+  `handleOcrFailure()`; the scanner stays live and auto-retries every frame, showing a
+  `"⏳ Downloading OCR model…"` status. Codes 9/13 (model unavailable) halt scanning
+  gracefully.
+- **Frame guard**: `isAnalysing` is now `volatile` — the flag is written on the main thread
+  (button clicks, `showOcrResults`) and read on the CameraX executor thread, eliminating a
+  subtle data-visibility race.
+- `textRecognizer` initialisation is wrapped in `try/catch` so a failed `getClient()` call
+  shows an error message rather than crashing.
+
+### Added – AppPreferences (Phase 4)
+- `util/AppPreferences.java` — singleton `SharedPreferences` wrapper with:
+  - `getGeminiKeyOverride()` / `setGeminiKeyOverride(String)` — runtime API key override
+    (takes priority over `BuildConfig`).
+  - `isVoiceAiEnabled()` / `setVoiceAiEnabled(boolean)` — persisted feature toggle.
+  - `isScannerEnabled()` / `setScannerEnabled(boolean)` — persisted feature toggle.
+  - `clearAll()` — diagnostics/reset helper.
+
+### Added – Settings screen (Phases 5 & 6)
+- `ui/settings/SettingsFragment.java` — full settings screen with four Material 3 card
+  sections: **Gemini API Key** (paste/save/clear + masked display), **Features** (voice AI
+  and scanner switches), **Diagnostics** (Play Services status + OCR model check), and
+  **About** (version, backend, key source).
+- `res/layout/fragment_settings.xml` — ScrollView layout with `MaterialCardView` sections,
+  `TextInputLayout`, `SwitchMaterial`, and `MaterialButton` components.
+- `res/drawable/ic_settings.xml` — Material gear vector icon (24 dp), tinted with
+  `?attr/colorControlNormal`.
+- `res/navigation/nav_graph.xml` — `navigation_settings` destination added.
+- `ui/MainActivity.java` — `destination_settings` hidden from bottom nav (bottom bar and
+  voice FAB are hidden when on scanner or settings screens).
+- `ui/dashboard/DashboardFragment.java` — `btn_settings` click navigates to
+  `R.id.navigation_settings` via `Navigation.findNavController`.
+- `res/values/strings.xml` — added `title_settings`, `cd_settings`, and full set of
+  `settings_*` strings for all labels, buttons, and hints.
+
+### Changed – Documentation (Phase 7)
+- `README.md` — updated feature table (Settings screen row), Quick Start §4 (mentions
+  runtime key override via Settings), and project structure tree (shows `ai/GeminiConfig`,
+  `util/AppPreferences`, `ui/settings/`).
+- `CHANGELOG.md` (this file) — full record of all Phase 2–7 additions.
+
+---
+
 ## [1.0.0] – 2026-06-18
+
 
 First stable release. A modern reimagining of `vincentbecker/Foodventory` (2018) as a
 voice-first, offline-capable price manager for Indian kirana (grocery) stores.

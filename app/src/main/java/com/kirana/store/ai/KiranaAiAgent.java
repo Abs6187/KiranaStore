@@ -1,15 +1,15 @@
 package com.kirana.store.ai;
 
+import android.content.Context;
 import android.util.Log;
 
-import com.google.firebase.Firebase;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.ai.FirebaseAI;
 import com.google.firebase.ai.GenerativeModel;
 import com.google.firebase.ai.java.GenerativeModelFutures;
 import com.google.firebase.ai.type.Content;
 import com.google.firebase.ai.type.GenerateContentResponse;
-import com.google.firebase.ai.type.GenerationConfig;
-import com.google.firebase.ai.type.RequestOptions;
+import com.google.firebase.ai.type.GenerativeBackend;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -38,8 +38,9 @@ import java.util.concurrent.Executors;
  * Example input : "Mustard oil ki price 175 rupees kar do"
  * Example output: {"action":"update_price","product":"Mustard Oil","price":175.0}
  * <p>
- * API key is stored in local.properties as {@code GEMINI_API_KEY=...} and
- * injected via BuildConfig through the secrets-gradle-plugin.
+ * Uses the <b>googleAI</b> backend (free Gemini Developer API key). The key is resolved by
+ * {@link GeminiConfig}: runtime override (Settings screen) takes priority, otherwise
+ * {@code BuildConfig.GEMINI_API_KEY} from {@code local.properties}.
  */
 public class KiranaAiAgent {
 
@@ -71,13 +72,19 @@ public class KiranaAiAgent {
         "Respond ONLY with the JSON object. No markdown. No extra text.";
 
     /**
-     * Initialise the agent using Firebase AI Logic (googleai provider = free Gemini API key).
-     * The {@code apiKey} parameter is kept for interface compatibility but the Firebase SDK
-     * secures it internally via App Check when configured.
+     * Initialise the agent against the <b>googleAI</b> (Gemini Developer API) backend.
+     * <p>
+     * This is the free-tier path: it uses the Gemini API key wired through the secondary
+     * Gemini {@link FirebaseApp} (see {@link GeminiConfig}). The previous implementation
+     * called {@code FirebaseAI.getInstance()} with no backend, which silently resolved to
+     * <i>Vertex AI</i> (Blaze plan + App Check required) and so every request failed auth.
+     *
+     * @param context any context; the application context is used internally
+     * @throws IllegalStateException if no Gemini key is configured
      */
-    public KiranaAiAgent(String apiKey) {
-        // Firebase AI Logic – googleai provider (free tier, API key secured via App Check)
-        GenerativeModel generativeModel = FirebaseAI.getInstance()
+    public KiranaAiAgent(Context context) {
+        FirebaseApp geminiApp = GeminiConfig.ensureGeminiApp(context.getApplicationContext());
+        GenerativeModel generativeModel = FirebaseAI.getInstance(geminiApp, GenerativeBackend.googleAI())
             .generativeModel(MODEL_NAME);
         model = GenerativeModelFutures.from(generativeModel);
     }

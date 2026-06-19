@@ -15,6 +15,7 @@
 | **TTS Feedback** | Android TextToSpeech (en-IN) | Reads back confirmation aloud |
 | **OCR Receipt Scan** | CameraX + ML Kit Text Recognition v2 | Fully on-device, no cloud, ₹ price regex extraction |
 | **Price History** | Room PriceHistory table | Auto-timestamped every change (manual/voice/ocr) |
+| **Settings screen** | SharedPreferences (`AppPreferences`) | Runtime Gemini key override, Voice AI/Scanner toggles, diagnostics |
 | **Dark Mode** | Material Design 3 | System auto-switch light/dark theme |
 | **Firestore Sync** | Firebase free-tier | Optional cloud backup of product catalogue |
 
@@ -97,6 +98,8 @@ firebase deploy --only firestore:rules
    ```
    > ⚠️ `local.properties` is in `.gitignore` – **never commit your key**
 
+   **Alternative**: launch the app, tap the ⚙️ gear icon on the Dashboard header, and paste the key in **Settings → Gemini API Key**. The runtime override takes effect immediately without a rebuild.
+
 ### 5. Add google-services.json
 
 1. [Firebase Console](https://console.firebase.google.com) → Your project → Project Settings
@@ -163,19 +166,24 @@ KiranaStore/
 │   └── src/
 │       ├── main/java/com/kirana/store/
 │       │   ├── KiranaApp.java           # Application class
-│       │   ├── ai/KiranaAiAgent.java    # Gemini 2.0 Flash NLP
+│       │   ├── ai/
+│       │   │   ├── KiranaAiAgent.java   # Gemini 2.0 Flash NLP (googleAI backend)
+│       │   │   └── GeminiConfig.java    # Secondary FirebaseApp + key resolution
 │       │   ├── voice/VoiceManager.java  # STT (hi-IN) + TTS
-│       │   ├── util/FuzzyMatcher.java   # Levenshtein product-name matching
+│       │   ├── util/
+│       │   │   ├── FuzzyMatcher.java    # Levenshtein product-name matching
+│       │   │   └── AppPreferences.java  # Runtime toggles + Gemini key override
 │       │   ├── data/
 │       │   │   ├── model/               # Product, PriceHistory
 │       │   │   ├── db/                  # Room DAOs, KiranaDatabase
 │       │   │   └── repository/          # ProductRepository
 │       │   └── ui/
 │       │       ├── MainActivity.java    # Nav + Voice FAB
-│       │       ├── dashboard/           # Price grid
+│       │       ├── dashboard/           # Price grid + gear icon → Settings
 │       │       ├── prices/              # Full list + inline edit
-│       │       ├── scanner/             # CameraX + ML Kit OCR
-│       │       └── history/             # Timestamped price log
+│       │       ├── scanner/             # CameraX + ML Kit OCR (Play Services guard)
+│       │       ├── history/             # Timestamped price log
+│       │       └── settings/            # Gemini key override, toggles, diagnostics
 │       ├── main/res/                    # Layouts, drawables, themes
 │       ├── test/                        # JVM unit tests
 │       └── androidTest/                 # Instrumented (device) tests

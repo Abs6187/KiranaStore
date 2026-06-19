@@ -1,0 +1,10 @@
+# dataconnect/connectors/connector.yaml
+# Connector config — declares the GraphQL operations the Android SDK will use.
+
+specVersion: "v1alpha"
+connectorId: "kirana-android"
+authMode: PUBLIC        # Anonymous reads — tighten to USER_EMAIL_PASSWORD once auth is added
+generate:
+  kotlinSdk:
+    outputDir: "../../app/src/main/kotlin/com/kirana/store/dataconnect"
+    package: "com.kirana.store.dataconnect"

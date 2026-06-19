@@ -5,6 +5,7 @@
     <string name="title_prices">Prices</string>
     <string name="title_scanner">Scanner</string>
     <string name="title_history">Price History</string>
+    <string name="title_settings">Settings</string>
 
     <!-- Voice -->
     <string name="voice_listening">Listening…</string>
@@ -41,4 +42,20 @@
     <string name="cd_add_product">Add new product</string>
     <string name="cd_close">Close</string>
     <string name="cd_pinned">Item is pinned</string>
+    <string name="cd_settings">Open settings</string>
+
+    <!-- Settings screen -->
+    <string name="settings_gemini_key_label">Gemini API Key</string>
+    <string name="settings_gemini_key_hint">Paste Gemini API Key (AIza…)</string>
+    <string name="settings_save_key">Save Key</string>
+    <string name="settings_clear_key">Clear</string>
+    <string name="settings_test_connection">Test Gemini Connection</string>
+    <string name="settings_features_label">Features</string>
+    <string name="settings_voice_ai_title">Voice AI</string>
+    <string name="settings_voice_ai_subtitle">Gemini-powered voice commands</string>
+    <string name="settings_scanner_title">Receipt Scanner</string>
+    <string name="settings_scanner_subtitle">Camera + ML Kit OCR</string>
+    <string name="settings_diagnostics_label">Diagnostics</string>
+    <string name="settings_check_ocr">Check OCR Model Status</string>
+    <string name="settings_about_label">About</string>
 </resources>
