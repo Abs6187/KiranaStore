@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@color/surface">
+    android:background="?attr/colorSurface">
 
     <!-- Handle bar -->
     <View
@@ -21,10 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Add New Product"
-        android:textColor="@color/text_primary"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-medium"
+        android:textColor="?attr/colorOnSurface"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
+        android:accessibilityHeading="true"
         android:layout_marginBottom="20dp" />
 
     <!-- Product name -->
@@ -32,11 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Product Name *"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp">
+        style="@style/Widget.KiranaStore.TextInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_product_name"
@@ -52,12 +47,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:hint="Price (₹) *"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        app:prefixText="₹"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp">
+        style="@style/Widget.KiranaStore.TextInputLayout"
+        app:prefixText="₹">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_product_price"
@@ -73,11 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:hint="Unit (kg, litre, packet...)"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp">
+        style="@style/Widget.KiranaStore.TextInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_product_unit"
@@ -113,10 +100,5 @@
             app:backgroundTint="@color/accent_primary"
             android:textColor="@color/on_accent" />
     </LinearLayout>
-
-    <!-- Bottom padding for nav bar -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="24dp" />
 
 </LinearLayout>

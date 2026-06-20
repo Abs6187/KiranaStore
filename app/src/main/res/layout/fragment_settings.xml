@@ -17,10 +17,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Settings"
-            android:textColor="@color/text_primary"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
+            android:textColor="?attr/colorOnSurface"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:accessibilityHeading="true"
             android:layout_marginBottom="24dp" />
 
         <!-- ── Gemini API Key ─────────────────────────────────────────────── -->
@@ -41,9 +40,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="🤖 Gemini API Key"
-                    android:textColor="@color/text_primary"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:accessibilityHeading="true"
                     android:layout_marginBottom="4dp" />
 
                 <TextView
@@ -59,11 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Paste Gemini API Key"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp">
+                    style="@style/Widget.KiranaStore.TextInputLayout">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edit_api_key"
@@ -136,9 +131,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="⚙️ Features"
-                    android:textColor="@color/text_primary"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:accessibilityHeading="true"
                     android:layout_marginBottom="16dp" />
 
                 <!-- Voice AI Toggle -->
@@ -170,7 +165,7 @@
                             android:textSize="12sp" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switch_voice_ai"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -204,7 +199,7 @@
                             android:textSize="12sp" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switch_scanner"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -231,9 +226,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="🩺 Diagnostics"
-                    android:textColor="@color/text_primary"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:accessibilityHeading="true"
                     android:layout_marginBottom="16dp" />
 
                 <com.google.android.material.button.MaterialButton
@@ -282,9 +277,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ℹ️ About"
-                    android:textColor="@color/text_primary"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:accessibilityHeading="true"
                     android:layout_marginBottom="12dp" />
 
                 <TextView
@@ -316,8 +311,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Bottom padding for nav bar -->
-        <View android:layout_width="match_parent" android:layout_height="24dp" />
 
     </LinearLayout>
 </ScrollView>

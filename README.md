@@ -11,7 +11,7 @@
 |---|---|---|
 | **Price Dashboard** | Room + LiveData | Grid of products with ₹ prices, pinning, inline edit |
 | **Voice Commands** | Android STT (hi-IN) + Gemini 2.0 Flash | "Mustard oil 175 rupees karo" → auto-updates price |
-| **AI NLP** | Gemini 2.0 Flash API | Parses Hindi/Hinglish/English → JSON command |
+| **AI NLP** | Gemini 2.0 Flash via Firebase AI Logic (`googleAI()` backend) | Parses Hindi/Hinglish/English → JSON command |
 | **TTS Feedback** | Android TextToSpeech (en-IN) | Reads back confirmation aloud |
 | **OCR Receipt Scan** | CameraX + ML Kit Text Recognition v2 | Fully on-device, no cloud, ₹ price regex extraction |
 | **Price History** | Room PriceHistory table | Auto-timestamped every change (manual/voice/ocr) |
@@ -111,6 +111,39 @@ firebase deploy --only firestore:rules
 - Open folder `KiranaStore/` in Android Studio Hedgehog or later
 - Click **Sync Project with Gradle Files**
 - Build → Run on device (API 26+)
+
+---
+
+## ⚙️ Configuration & Troubleshooting
+
+A **Settings** screen is available from the gear icon on the Dashboard header.
+
+### Gemini API key (Voice AI)
+The Voice AI feature uses the **Gemini Developer API** via the Firebase AI Logic `googleAI()`
+backend (the free-tier path — not Vertex AI). The key is resolved in this priority order:
+
+1. **Runtime override** — paste a key in Settings → "Gemini API Key" → Save (stored in
+   SharedPreferences; takes effect immediately).
+2. **`local.properties`** → `GEMINI_API_KEY=...` → injected into `BuildConfig` by the
+   secrets-gradle-plugin at build time.
+
+> ℹ️ The checked-in `google-services.json` holds a **Firebase Web API key** (for
+> Analytics/Firestore), *not* a Gemini key. The Gemini key is wired through a secondary
+> `FirebaseApp` (see `ai/GeminiConfig.java`), so editing `google-services.json` is not required.
+
+Use **Settings → "🔍 Test Gemini Connection"** to verify the key works end-to-end.
+
+### OCR / Scanner not working?
+The ML Kit text-recognition model is **downloaded lazily by Google Play Services on first
+use**. On first launch the scanner may show "⏳ Downloading OCR model…" and auto-retry. If it
+stays stuck:
+- Confirm Google Play Services is up to date (Settings → "Google Play Services: ✅ Available").
+- Use **Settings → "📷 Check OCR Model Status"** to probe the model.
+- OCR requires a device **with** Google Play Services (not AOSP-only devices).
+
+### Voice/Scanner toggles
+Both features can be independently enabled/disabled from Settings; the app respects these
+toggles at runtime.
 
 ---
 

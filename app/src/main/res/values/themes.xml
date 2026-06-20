@@ -3,19 +3,36 @@
 
     <!-- Base app theme: Material Design 3, light mode -->
     <style name="Theme.KiranaStore" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/accent_primary</item>
-        <item name="colorOnPrimary">@color/on_accent</item>
+        <!-- Primary -->
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
-        <item name="colorSurface">@color/surface</item>
-        <item name="colorOnSurface">@color/text_primary</item>
-        <item name="colorSurfaceVariant">@color/surface_variant</item>
-        <item name="android:colorBackground">@color/bg_primary</item>
-        <item name="android:windowBackground">@color/bg_primary</item>
-        <item name="android:statusBarColor">@color/surface</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">@color/surface</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+        <!-- Secondary -->
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+        <!-- Tertiary (price green) -->
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+        <!-- Surface -->
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+        <!-- Background -->
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="android:windowBackground">@color/md_theme_light_background</item>
+        <!-- Error -->
         <item name="colorError">@color/color_error</item>
+        <!-- System bars -->
+        <item name="android:statusBarColor">@color/md_theme_light_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/md_theme_light_surface</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
     <!-- BottomSheet style override -->
@@ -30,6 +47,28 @@
     <style name="KiranaBottomSheetShape" parent="ShapeAppearance.Material3.Corner.Large">
         <item name="cornerSizeTopLeft">24dp</item>
         <item name="cornerSizeTopRight">24dp</item>
+    </style>
+
+    <!-- ── Reusable component styles ──────────────────────────────────────── -->
+
+    <!-- Single-source TextInputLayout style: 12dp rounded corners -->
+    <style name="Widget.KiranaStore.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+    </style>
+
+    <!-- Card: M3 ElevatedCard — shape already set to Medium (12dp) by parent -->
+    <style name="Widget.KiranaStore.Card" parent="Widget.Material3.CardView.Elevated" />
+
+    <!-- Screen header bar: tonal surface instead of raw drop-shadow -->
+    <style name="Widget.KiranaStore.ScreenHeader" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">12dp</item>
     </style>
 
 </resources>

@@ -119,7 +119,7 @@ public class SettingsFragment extends Fragment {
         if (!GeminiConfig.isConfigured(requireContext())) {
             binding.textConnectionResult.setText("❌ No Gemini key configured");
             binding.textConnectionResult.setTextColor(
-                requireContext().getColor(R.color.status_error));
+                requireContext().getColor(R.color.color_error));
             return;
         }
 
@@ -133,7 +133,7 @@ public class SettingsFragment extends Fragment {
                             binding.textConnectionResult.setText(
                                 "✅ Gemini reachable — model responded");
                             binding.textConnectionResult.setTextColor(
-                                requireContext().getColor(R.color.status_success));
+                                requireContext().getColor(R.color.color_success));
                         });
                     }
                     @Override
@@ -142,14 +142,14 @@ public class SettingsFragment extends Fragment {
                             binding.textConnectionResult.setText(
                                 "❌ Gemini error: " + e.getMessage());
                             binding.textConnectionResult.setTextColor(
-                                requireContext().getColor(R.color.status_error));
+                                requireContext().getColor(R.color.color_error));
                         });
                     }
                 });
         } catch (Exception e) {
             binding.textConnectionResult.setText("❌ Init failed: " + e.getMessage());
             binding.textConnectionResult.setTextColor(
-                requireContext().getColor(R.color.status_error));
+                requireContext().getColor(R.color.color_error));
         }
     }
 
@@ -210,7 +210,7 @@ public class SettingsFragment extends Fragment {
                     .addOnSuccessListener(text -> requireActivity().runOnUiThread(() -> {
                         binding.textOcrStatus.setText("✅ OCR model ready");
                         binding.textOcrStatus.setTextColor(
-                            requireContext().getColor(R.color.status_success));
+                            requireContext().getColor(R.color.color_success));
                         recognizer.close();
                     }))
                     .addOnFailureListener(e -> requireActivity().runOnUiThread(() -> {
@@ -227,7 +227,7 @@ public class SettingsFragment extends Fragment {
                             binding.textOcrStatus.setText("❌ " + e.getMessage());
                         }
                         binding.textOcrStatus.setTextColor(
-                            requireContext().getColor(R.color.status_error));
+                            requireContext().getColor(R.color.color_error));
                     }));
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() -> {

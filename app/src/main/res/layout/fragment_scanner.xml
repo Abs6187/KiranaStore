@@ -16,7 +16,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#55000000" />
+        android:background="@color/scanner_overlay_dim" />
 
     <!-- Top controls -->
     <LinearLayout
@@ -25,12 +25,12 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:padding="16dp"
-        android:background="#88000000">
+        android:background="@color/scanner_overlay_top">
 
         <ImageButton
             android:id="@+id/btn_close"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/ic_close"
             android:tint="@android:color/white"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -44,9 +44,10 @@
             android:text="Scan Receipt / Price Tag"
             android:textColor="@android:color/white"
             android:textSize="17sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:accessibilityHeading="true" />
 
-        <View android:layout_width="40dp" android:layout_height="40dp" />
+        <View android:layout_width="48dp" android:layout_height="48dp" />
     </LinearLayout>
 
     <!-- Hint text -->
@@ -67,7 +68,7 @@
         android:layout_gravity="bottom"
         android:orientation="vertical"
         android:padding="20dp"
-        android:background="#CC000000">
+        android:background="@color/scanner_overlay_bottom">
 
         <!-- OCR result text -->
         <TextView

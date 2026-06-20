@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -12,8 +13,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
     private DashboardViewModel dashboardViewModel;
     private boolean isListening = false;
     private Vibrator vibrator;
+    private boolean reduceMotion = false;
 
     private final ActivityResultLauncher<String[]> permissionLauncher =
         registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
@@ -71,9 +77,23 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Cat 6: Edge-to-edge — let content draw behind system bars
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Cat 6: Apply WindowInsets so BottomNav + FAB sit above the nav bar
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            int navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            binding.bottomNavigation.setPadding(0, 0, 0, navBar);
+            return insets;
+        });
+
+        // Cat 8: Check reduced motion setting once per Activity lifecycle
+        float durationScale = Settings.Global.getFloat(
+            getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f);
+        reduceMotion = (durationScale == 0f);
 
         setupNavigation();
         requestPermissionsIfNeeded();
@@ -98,7 +118,23 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
             R.id.navigation_history
         ).build();
 
-        NavigationUI.setupWithNavController(bottomNav, navController);
+        // Cat 8: Wire M3 transitions into BottomNav tab switches
+        bottomNav.setOnItemSelectedListener(item -> {
+            NavOptions.Builder optsBuilder = new NavOptions.Builder()
+                .setLaunchSingleTop(true)
+                .setRestoreState(true)
+                .setPopUpTo(navController.getGraph().getStartDestinationId(),
+                    false, true);
+            if (!reduceMotion) {
+                optsBuilder
+                    .setEnterAnim(R.anim.fragment_enter)
+                    .setExitAnim(R.anim.fragment_exit)
+                    .setPopEnterAnim(R.anim.fragment_pop_enter)
+                    .setPopExitAnim(R.anim.fragment_pop_exit);
+            }
+            navController.navigate(item.getItemId(), null, optsBuilder.build());
+            return true;
+        });
 
         // Hide bottom nav + voice FAB on scanner and settings screens
         navController.addOnDestinationChangedListener((ctrl, dest, args) -> {
@@ -148,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
             return;
         }
         isListening = true;
-        binding.fabVoice.setImageResource(R.drawable.ic_mic_active);
+        updateFabIcon(R.drawable.ic_mic_active);
         vibrateShort();
         voiceManager.startListening();
         Snackbar.make(binding.getRoot(), "🎤 Listening... speak now", Snackbar.LENGTH_SHORT).show();
@@ -156,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
 
     private void stopVoiceListening() {
         isListening = false;
-        binding.fabVoice.setImageResource(R.drawable.ic_mic);
+        updateFabIcon(R.drawable.ic_mic);
         voiceManager.stopListening();
     }
 
@@ -164,10 +200,10 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
 
     @Override
     public void onSpeechResult(String text, boolean isFinal) {
-        if (!isFinal) return; // Only process final results
+        if (!isFinal) return;
         Log.d(TAG, "Voice result: " + text);
         isListening = false;
-        binding.fabVoice.setImageResource(R.drawable.ic_mic);
+        updateFabIcon(R.drawable.ic_mic);
 
         if (aiAgent == null) {
             // Fallback: show raw transcript
@@ -205,14 +241,14 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
 
     @Override
     public void onListeningStarted() {
-        runOnUiThread(() -> binding.fabVoice.setImageResource(R.drawable.ic_mic_active));
+        runOnUiThread(() -> updateFabIcon(R.drawable.ic_mic_active));
     }
 
     @Override
     public void onListeningStopped() {
         runOnUiThread(() -> {
             isListening = false;
-            binding.fabVoice.setImageResource(R.drawable.ic_mic);
+            updateFabIcon(R.drawable.ic_mic);
         });
     }
 
@@ -220,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
     public void onError(String errorMessage) {
         runOnUiThread(() -> {
             isListening = false;
-            binding.fabVoice.setImageResource(R.drawable.ic_mic);
+            updateFabIcon(R.drawable.ic_mic);
             Snackbar.make(binding.getRoot(), "Voice error: " + errorMessage,
                 Snackbar.LENGTH_SHORT).show();
         });
@@ -286,5 +322,20 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
     protected void onDestroy() {
         super.onDestroy();
         voiceManager.release();
+    }
+
+    /**
+     * Cat 8: Crossfade the FAB mic icon (80ms alpha fade).
+     * Skipped entirely when the user has enabled "Remove animations" in system settings.
+     */
+    private void updateFabIcon(int resId) {
+        if (reduceMotion) {
+            binding.fabVoice.setImageResource(resId);
+            return;
+        }
+        binding.fabVoice.animate().alpha(0f).setDuration(80).withEndAction(() -> {
+            binding.fabVoice.setImageResource(resId);
+            binding.fabVoice.animate().alpha(1f).setDuration(80).start();
+        }).start();
     }
 }

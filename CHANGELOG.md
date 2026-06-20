@@ -9,7 +9,7 @@ All prices in the product are in **Indian Rupees (₹)**.
 
 ---
 
-## [1.1.0] – 2026-06-19
+## [1.1.0] – 2026-06-20
 
 ### Added – KiranaAiAgent googleAI() backend (Phase 2)
 - `ai/GeminiConfig.java` — utility class that creates a secondary `FirebaseApp` named
@@ -31,9 +31,9 @@ All prices in the product are in **Indian Rupees (₹)**.
   `handleOcrFailure()`; the scanner stays live and auto-retries every frame, showing a
   `"⏳ Downloading OCR model…"` status. Codes 9/13 (model unavailable) halt scanning
   gracefully.
-- **Frame guard**: `isAnalysing` is now `volatile` — the flag is written on the main thread
-  (button clicks, `showOcrResults`) and read on the CameraX executor thread, eliminating a
-  subtle data-visibility race.
+- **Frame guard**: `isAnalysing` is now `volatile` and a new `AtomicBoolean isProcessingFrame`
+  prevents overlapping `TextRecognizer.process()` calls on the CameraX executor thread,
+  eliminating data-visibility races and redundant OCR work.
 - `textRecognizer` initialisation is wrapped in `try/catch` so a failed `getClient()` call
   shows an error message rather than crashing.
 

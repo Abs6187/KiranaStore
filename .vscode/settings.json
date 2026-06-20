@@ -4,6 +4,16 @@
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
 
+    // Explicitly declare app module source paths so the JLS resolves the
+    // Android Gradle classpath — eliminates "not on classpath" false positives.
+    "java.project.sourcePaths": [
+        "app/src/main/java",
+        "app/src/test/java",
+        "app/src/androidTest/java",
+        "app/build/generated/ap_generated_sources/debug/out",
+        "app/build/generated/source/buildConfig/debug"
+    ],
+
     // Exclude only the build-logic Groovy module and Gradle cache from the
     // Java LS — NOT the app's own build/ folder (generated sources live there).
     "java.import.exclusions": [
@@ -12,8 +22,13 @@
     ],
 
     // ── GitHub Actions extension ────────────────────────────────────────────
-    // Suppresses offline "Unable to resolve action" false positives.
+    // pinned.enabled=false   : disables workflow pinning UI
+    // validation.enabled=false: kills online action-resolution check —
+    //   silences all "Unable to resolve action" false positives when offline.
+    // The workflow is 100% valid; all actions (checkout@v4, setup-java@v4,
+    // upload-artifact@v4, softprops/action-gh-release@v2) exist on GitHub.
     "github-actions.workflows.pinned.enabled": false,
+    "github-actions.workflows.validation.enabled": false,
 
     // ── YAML language server ────────────────────────────────────────────────
     // Suppress schema-driven errors for GitHub Actions workflow files only.
@@ -25,4 +40,3 @@
     },
     "yaml.validate": false
 }
-
