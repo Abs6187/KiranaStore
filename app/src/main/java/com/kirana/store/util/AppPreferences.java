@@ -27,10 +27,14 @@ public final class AppPreferences {
     private static final String KEY_GEMINI_OVERRIDE   = "gemini_key_override";
     private static final String KEY_VOICE_AI_ENABLED   = "voice_ai_enabled";
     private static final String KEY_SCANNER_ENABLED     = "scanner_enabled";
+    private static final String KEY_FAB_X               = "fab_x";
+    private static final String KEY_FAB_Y               = "fab_y";
+    private static final String KEY_UI_SCALE            = "ui_scale";
 
     // ── Defaults ───────────────────────────────────────────────────────────────
     private static final boolean DEFAULT_VOICE_AI   = true;
     private static final boolean DEFAULT_SCANNER    = true;
+    private static final float DEFAULT_UI_SCALE     = 1.0f;
 
     private AppPreferences(@NonNull Context context) {
         prefs = context.getApplicationContext()
@@ -93,6 +97,30 @@ public final class AppPreferences {
 
     public void setScannerEnabled(boolean enabled) {
         prefs.edit().putBoolean(KEY_SCANNER_ENABLED, enabled).apply();
+    }
+
+    // ── FAB Positioning ──────────────────────────────────────────────────────
+
+    public float getFabX(float defaultX) {
+        return prefs.getFloat(KEY_FAB_X, defaultX);
+    }
+
+    public float getFabY(float defaultY) {
+        return prefs.getFloat(KEY_FAB_Y, defaultY);
+    }
+
+    public void setFabPosition(float x, float y) {
+        prefs.edit().putFloat(KEY_FAB_X, x).putFloat(KEY_FAB_Y, y).apply();
+    }
+
+    // ── UI Scaling ───────────────────────────────────────────────────────────
+
+    public float getUiScale() {
+        return prefs.getFloat(KEY_UI_SCALE, DEFAULT_UI_SCALE);
+    }
+
+    public void setUiScale(float scale) {
+        prefs.edit().putFloat(KEY_UI_SCALE, scale).apply();
     }
 
     // ── Bulk operations ──────────────────────────────────────────────────────

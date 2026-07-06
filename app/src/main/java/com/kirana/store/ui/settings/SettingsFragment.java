@@ -61,6 +61,7 @@ public class SettingsFragment extends Fragment {
         refreshKeyStatus();
         setupKeyControls();
         setupToggles();
+        setupDisplaySettings();
         setupDiagnostics();
         showAbout();
     }
@@ -171,6 +172,25 @@ public class SettingsFragment extends Fragment {
             Toast.makeText(requireContext(),
                 checked ? "Scanner enabled" : "Scanner disabled",
                 Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    // ── Display Settings ─────────────────────────────────────────────────────
+
+    private void setupDisplaySettings() {
+        android.util.DisplayMetrics metrics = new android.util.DisplayMetrics();
+        requireActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        binding.textResolution.setText("Resolution: " + width + " x " + height + "\nDensity: " + metrics.densityDpi + " dpi");
+
+        binding.sliderUiScale.setValue(prefs.getUiScale());
+        binding.sliderUiScale.addOnChangeListener((slider, value, fromUser) -> {
+            if (fromUser) {
+                prefs.setUiScale(value);
+                // Recreate the activity so the new UI Scale takes effect
+                requireActivity().recreate();
+            }
         });
     }
 

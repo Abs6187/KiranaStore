@@ -2,10 +2,13 @@ package com.kirana.store.ui;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -75,6 +78,22 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
                     Snackbar.LENGTH_LONG).show();
             }
         });
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        float scale = AppPreferences.get(newBase).getUiScale();
+        if (scale != 1.0f) {
+            Configuration config = new Configuration(newBase.getResources().getConfiguration());
+            // Adjust density to simulate resolution change.
+            // Using standard density baseline (160) and scaling from current.
+            config.densityDpi = (int) (newBase.getResources().getDisplayMetrics().densityDpi * scale);
+            config.fontScale = scale;
+            Context scaledContext = newBase.createConfigurationContext(config);
+            super.attachBaseContext(scaledContext);
+        } else {
+            super.attachBaseContext(newBase);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +192,55 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
                 stopVoiceListening();
             } else {
                 startVoiceListening();
+            }
+        });
+
+        binding.fabVoice.setOnTouchListener(new View.OnTouchListener() {
+            private float dX, dY;
+            private float downRawX, downRawY;
+            private static final int CLICK_DRAG_TOLERANCE = 10;
+
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dX = view.getX() - event.getRawX();
+                        dY = view.getY() - event.getRawY();
+                        downRawX = event.getRawX();
+                        downRawY = event.getRawY();
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        float newX = event.getRawX() + dX;
+                        float newY = event.getRawY() + dY;
+                        view.animate().x(newX).y(newY).setDuration(0).start();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        float upRawX = event.getRawX();
+                        float upRawY = event.getRawY();
+                        float distance = (float) Math.hypot(upRawX - downRawX, upRawY - downRawY);
+                        if (distance < CLICK_DRAG_TOLERANCE) {
+                            view.performClick();
+                        } else {
+                            AppPreferences.get(MainActivity.this).setFabPosition(view.getX(), view.getY());
+                        }
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+
+        // Restore saved position
+        binding.fabVoice.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                binding.fabVoice.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                float savedX = AppPreferences.get(MainActivity.this).getFabX(-1);
+                float savedY = AppPreferences.get(MainActivity.this).getFabY(-1);
+                if (savedX != -1 && savedY != -1) {
+                    binding.fabVoice.setX(savedX);
+                    binding.fabVoice.setY(savedY);
+                }
             }
         });
     }
