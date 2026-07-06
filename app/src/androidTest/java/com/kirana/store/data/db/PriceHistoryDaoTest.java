@@ -48,37 +48,37 @@ public class PriceHistoryDaoTest {
 
     @Test
     public void getLatestHistoryEntry_returnsNewestForProduct() throws Exception {
-        long productId = productDao.insertProduct(new Product("Mustard Oil", 175.0, "litre"));
+        long productId = productDao.insertProduct(new Product("Mustard Oil", 175.0, 150.0, "litre"));
 
-        PriceHistory first = new PriceHistory((int) productId, 175.0, "manual", "initial");
+        PriceHistory first = new PriceHistory((int) productId, 175.0, 150.0, "manual", "initial");
         first.timestamp = new Date(System.currentTimeMillis() - 60_000);
         historyDao.insertHistory(first);
 
-        PriceHistory second = new PriceHistory((int) productId, 180.0, "voice", "180 rupee");
+        PriceHistory second = new PriceHistory((int) productId, 180.0, 150.0, "voice", "180 rupee");
         second.timestamp = new Date(System.currentTimeMillis());
         historyDao.insertHistory(second);
 
         PriceHistory latest = historyDao.getLatestHistoryEntry((int) productId);
         assertNotNull(latest);
-        assertEquals(180.0, latest.price, 0.001);
+        assertEquals(180.0, latest.salesPrice, 0.001);
         assertEquals("voice", latest.source);
     }
 
     @Test
     public void getLatestHistoryEntry_returnsNullWhenNoHistory() {
-        long productId = productDao.insertProduct(new Product("Sugar", 48.0, "kg"));
+        long productId = productDao.insertProduct(new Product("Sugar", 48.0, 40.0, "kg"));
         PriceHistory latest = historyDao.getLatestHistoryEntry((int) productId);
         assertNull(latest);
     }
 
     @Test
     public void deletingProduct_cascadesToDeleteItsHistory() {
-        Product oil = new Product("Sunflower Oil", 130.0, "litre");
+        Product oil = new Product("Sunflower Oil", 130.0, 110.0, "litre");
         long productId = productDao.insertProduct(oil);
         oil.id = (int) productId;
 
-        historyDao.insertHistory(new PriceHistory((int) productId, 130.0, "manual", null));
-        historyDao.insertHistory(new PriceHistory((int) productId, 135.0, "ocr_scan", "receipt"));
+        historyDao.insertHistory(new PriceHistory((int) productId, 130.0, 110.0, "manual", null));
+        historyDao.insertHistory(new PriceHistory((int) productId, 135.0, 110.0, "ocr_scan", "receipt"));
 
         // Sanity: history exists
         assertNotNull(historyDao.getLatestHistoryEntry((int) productId));
@@ -90,11 +90,11 @@ public class PriceHistoryDaoTest {
 
     @Test
     public void clearHistoryForProduct_removesOnlyThatProductsRows() {
-        long id1 = productDao.insertProduct(new Product("Toor Dal", 140.0, "kg"));
-        long id2 = productDao.insertProduct(new Product("Sugar", 48.0, "kg"));
+        long id1 = productDao.insertProduct(new Product("Toor Dal", 140.0, 120.0, "kg"));
+        long id2 = productDao.insertProduct(new Product("Sugar", 48.0, 40.0, "kg"));
 
-        historyDao.insertHistory(new PriceHistory((int) id1, 140.0, "manual", null));
-        historyDao.insertHistory(new PriceHistory((int) id2, 48.0, "manual", null));
+        historyDao.insertHistory(new PriceHistory((int) id1, 140.0, 120.0, "manual", null));
+        historyDao.insertHistory(new PriceHistory((int) id2, 48.0, 40.0, "manual", null));
 
         historyDao.clearHistoryForProduct((int) id1);
 

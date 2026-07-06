@@ -53,8 +53,8 @@ public class ProductDaoTest {
     public void insertProduct_incrementsCountAndReturnsId() {
         assertEquals(0, productDao.getProductCount());
 
-        long id1 = productDao.insertProduct(new Product("Mustard Oil", 175.0, "litre"));
-        long id2 = productDao.insertProduct(new Product("Basmati Rice", 540.0, "5kg"));
+        long id1 = productDao.insertProduct(new Product("Mustard Oil", 175.0, 150.0, "litre"));
+        long id2 = productDao.insertProduct(new Product("Basmati Rice", 540.0, 500.0, "5kg"));
 
         assertTrue("First insert should return a positive id", id1 > 0);
         assertTrue("Second id must be greater than first", id2 > id1);
@@ -63,7 +63,7 @@ public class ProductDaoTest {
 
     @Test
     public void updatePrice_changesCurrentPriceAndLastUpdated() throws Exception {
-        Product p = new Product("Sugar", 48.0, "kg");
+        Product p = new Product("Sugar", 48.0, 40.0, "kg");
         long id = productDao.insertProduct(p);
         Date originalUpdated = p.lastUpdated;
 
@@ -71,7 +71,7 @@ public class ProductDaoTest {
         Thread.sleep(5);
 
         long newTs = System.currentTimeMillis();
-        productDao.updatePrice((int) id, 52.0, newTs);
+        productDao.updatePrice((int) id, 52.0, 40.0, newTs);
 
         // getAllProductNames only returns names; verify count is stable and
         // re-read via the count query. Price persistence is exercised through
@@ -90,9 +90,9 @@ public class ProductDaoTest {
 
     @Test
     public void getAllProductNames_returnsEveryInsertedName() {
-        productDao.insertProduct(new Product("Mustard Oil", 175.0, "litre"));
-        productDao.insertProduct(new Product("Atta 5kg", 280.0, "5kg"));
-        productDao.insertProduct(new Product("Toor Dal", 140.0, "kg"));
+        productDao.insertProduct(new Product("Mustard Oil", 175.0, 150.0, "litre"));
+        productDao.insertProduct(new Product("Atta 5kg", 280.0, 250.0, "5kg"));
+        productDao.insertProduct(new Product("Toor Dal", 140.0, 120.0, "kg"));
 
         List<String> names = productDao.getAllProductNames();
         assertEquals(3, names.size());
@@ -110,7 +110,7 @@ public class ProductDaoTest {
 
     @Test
     public void deleteProduct_removesRow() {
-        Product p = new Product("Sugar", 48.0, "kg");
+        Product p = new Product("Sugar", 48.0, 40.0, "kg");
         long id = productDao.insertProduct(p);
         p.id = (int) id;
 
