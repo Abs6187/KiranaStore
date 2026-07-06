@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 /**
  * Kirana AI Agent powered by Google Gemini 2.0 Flash via Firebase AI Logic SDK.
  * <p>
- * ⚠️ Migration notice:
+ * Migration notice:
  *   The legacy {@code com.google.ai.client.generativeai:0.9.0} SDK reached
  *   end-of-life on November 30, 2025. This class now uses the official
  *   replacement: {@code com.google.firebase:firebase-ai} (Firebase AI Logic),

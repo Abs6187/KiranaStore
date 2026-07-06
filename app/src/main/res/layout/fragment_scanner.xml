@@ -88,7 +88,7 @@
             style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="✅ Apply Detected Prices"
+            android:text="Apply Detected Prices"
             app:backgroundTint="@color/accent_primary"
             android:textColor="@color/on_accent"
             android:visibility="gone"

@@ -154,7 +154,7 @@ public class DashboardFragment extends Fragment {
                 double purchasePrice = purchasePriceStr.isEmpty() ? 0 : Double.parseDouble(purchasePriceStr);
                 viewModel.addProduct(name, salesPrice, purchasePrice, unit);
                 dialog.dismiss();
-                Snackbar.make(requireView(), "✅ " + name + " added at ₹" + (int)salesPrice,
+                Snackbar.make(requireView(), "" + name + " added at ₹" + (int)salesPrice,
                     Snackbar.LENGTH_SHORT).show();
             } catch (NumberFormatException e) {
                 dialogBinding.editProductPrice.setError("Invalid price");
@@ -200,7 +200,7 @@ public class DashboardFragment extends Fragment {
                 viewModel.updatePrice(product.id, newSalesPrice, newPurchasePrice, "manual", null);
                 dialog.dismiss();
                 Snackbar.make(requireView(),
-                    "✅ " + product.name + " → ₹" + (int) newSalesPrice, Snackbar.LENGTH_SHORT).show();
+                    "" + product.name + " → ₹" + (int) newSalesPrice, Snackbar.LENGTH_SHORT).show();
             } catch (NumberFormatException e) {
                 dialogBinding.editProductPrice.setError("Invalid price");
             }

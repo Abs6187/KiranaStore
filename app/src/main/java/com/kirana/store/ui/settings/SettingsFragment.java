@@ -97,7 +97,7 @@ public class SettingsFragment extends Fragment {
             }
             refreshKeyStatus();
             showAbout();
-            Toast.makeText(requireContext(), "✅ Gemini key saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Gemini key saved", Toast.LENGTH_SHORT).show();
         });
 
         binding.btnClearKey.setOnClickListener(v -> {
@@ -117,7 +117,7 @@ public class SettingsFragment extends Fragment {
             requireContext().getColor(R.color.text_secondary));
 
         if (!GeminiConfig.isConfigured(requireContext())) {
-            binding.textConnectionResult.setText("❌ No Gemini key configured");
+            binding.textConnectionResult.setText("No Gemini key configured");
             binding.textConnectionResult.setTextColor(
                 requireContext().getColor(R.color.color_error));
             return;
@@ -131,7 +131,7 @@ public class SettingsFragment extends Fragment {
                     public void onSuccess(KiranaAiAgent.ParsedCommand cmd) {
                         requireActivity().runOnUiThread(() -> {
                             binding.textConnectionResult.setText(
-                                "✅ Gemini reachable — model responded");
+                                "Gemini reachable — model responded");
                             binding.textConnectionResult.setTextColor(
                                 requireContext().getColor(R.color.color_success));
                         });
@@ -140,14 +140,14 @@ public class SettingsFragment extends Fragment {
                     public void onError(Exception e) {
                         requireActivity().runOnUiThread(() -> {
                             binding.textConnectionResult.setText(
-                                "❌ Gemini error: " + e.getMessage());
+                                "Gemini error: " + e.getMessage());
                             binding.textConnectionResult.setTextColor(
                                 requireContext().getColor(R.color.color_error));
                         });
                     }
                 });
         } catch (Exception e) {
-            binding.textConnectionResult.setText("❌ Init failed: " + e.getMessage());
+            binding.textConnectionResult.setText("Init failed: " + e.getMessage());
             binding.textConnectionResult.setTextColor(
                 requireContext().getColor(R.color.color_error));
         }
@@ -181,10 +181,10 @@ public class SettingsFragment extends Fragment {
         int psStatus = GoogleApiAvailability.getInstance()
             .isGooglePlayServicesAvailable(requireContext());
         if (psStatus == ConnectionResult.SUCCESS) {
-            binding.textPlayServices.setText("Google Play Services: ✅ Available");
+            binding.textPlayServices.setText("Google Play Services: Available");
         } else {
             String err = GoogleApiAvailability.getInstance().getErrorString(psStatus);
-            binding.textPlayServices.setText("Google Play Services: ❌ " + err);
+            binding.textPlayServices.setText("Google Play Services: " + err);
         }
 
         // OCR model check
@@ -208,7 +208,7 @@ public class SettingsFragment extends Fragment {
 
                 recognizer.process(img)
                     .addOnSuccessListener(text -> requireActivity().runOnUiThread(() -> {
-                        binding.textOcrStatus.setText("✅ OCR model ready");
+                        binding.textOcrStatus.setText("OCR model ready");
                         binding.textOcrStatus.setTextColor(
                             requireContext().getColor(R.color.color_success));
                         recognizer.close();
@@ -218,20 +218,20 @@ public class SettingsFragment extends Fragment {
                             int code = ((MlKitException) e).getErrorCode();
                             if (code == 14) {
                                 binding.textOcrStatus.setText(
-                                    "⏳ OCR model downloading… try again in a minute");
+                                    "OCR model downloading… try again in a minute");
                             } else {
                                 binding.textOcrStatus.setText(
-                                    "❌ OCR model error (code " + code + "): " + e.getMessage());
+                                    "OCR model error (code " + code + "): " + e.getMessage());
                             }
                         } else {
-                            binding.textOcrStatus.setText("❌ " + e.getMessage());
+                            binding.textOcrStatus.setText("" + e.getMessage());
                         }
                         binding.textOcrStatus.setTextColor(
                             requireContext().getColor(R.color.color_error));
                     }));
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() -> {
-                    binding.textOcrStatus.setText("❌ Check failed: " + e.getMessage());
+                    binding.textOcrStatus.setText("Check failed: " + e.getMessage());
                     binding.textOcrStatus.setTextColor(
                         requireContext().getColor(R.color.status_error));
                 });

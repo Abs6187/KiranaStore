@@ -25,7 +25,7 @@
     <!-- Scanner -->
     <string name="scanner_hint">Point camera at a receipt or price tag</string>
     <string name="scanner_ready">Ready to scan…</string>
-    <string name="scanner_confirm">✅ Apply Detected Prices</string>
+    <string name="scanner_confirm">Apply Detected Prices</string>
     <string name="scanner_rescan">🔄 Re-scan</string>
 
     <!-- Common -->

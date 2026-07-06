@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
                             updatePriceByName(bestMatch, cmd.salesPrice, cmd.purchasePrice, cmd.rawTranscript);
                             voiceManager.speak(cmd.acknowledgement);
                             Snackbar.make(binding.getRoot(),
-                                "✅ " + cmd.acknowledgement, Snackbar.LENGTH_SHORT).show();
+                                "" + cmd.acknowledgement, Snackbar.LENGTH_SHORT).show();
                         })
                         .setNegativeButton("Cancel", null)
                         .show();
@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
                         cmd.purchasePrice > 0 ? cmd.purchasePrice : 0, 
                         cmd.unit != null ? cmd.unit : "");
                     voiceManager.speak(cmd.acknowledgement);
-                    Snackbar.make(binding.getRoot(), "✅ " + cmd.acknowledgement,
+                    Snackbar.make(binding.getRoot(), "" + cmd.acknowledgement,
                         Snackbar.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)

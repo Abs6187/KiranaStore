@@ -44,9 +44,9 @@ import java.util.regex.Pattern;
  * <p>
  * Replaces the legacy {@code firebase-ml-vision} API (deprecated) with the modern
  * standalone {@code com.google.mlkit:text-recognition:17.3.0} which is:
- *   ✅ Fully on-device (private, no cloud round-trip)
- *   ✅ No Firebase project required
- *   ✅ Supports Latin + Devanagari (Hindi script) scripts
+ *   Fully on-device (private, no cloud round-trip)
+ *   No Firebase project required
+ *   Supports Latin + Devanagari (Hindi script) scripts
  * <p>
  * Model is downloaded lazily by Google Play Services on first {@code process()} call.
  * This fragment gracefully handles the download-wait state instead of appearing frozen.
@@ -98,7 +98,7 @@ public class ScannerFragment extends Fragment {
         if (playServices != ConnectionResult.SUCCESS) {
             String msg = GoogleApiAvailability.getInstance()
                 .getErrorString(playServices);
-            binding.textOcrResult.setText("⚠️ Google Play Services error: " + msg
+            binding.textOcrResult.setText("Google Play Services error: " + msg
                 + "\n\nOCR scanning requires up-to-date Play Services.");
             binding.btnConfirmScan.setVisibility(View.GONE);
             binding.btnCapture.setVisibility(View.GONE);
@@ -110,7 +110,7 @@ public class ScannerFragment extends Fragment {
         try {
             textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
         } catch (Exception e) {
-            binding.textOcrResult.setText("⚠️ OCR engine failed to initialise: "
+            binding.textOcrResult.setText("OCR engine failed to initialise: "
                 + e.getMessage());
             binding.btnCapture.setVisibility(View.GONE);
             Log.e(TAG, "TextRecognizer init failed", e);
@@ -140,7 +140,7 @@ public class ScannerFragment extends Fragment {
             } catch (ExecutionException | InterruptedException e) {
                 Log.e(TAG, "Camera init error: " + e.getMessage());
                 requireActivity().runOnUiThread(() ->
-                    binding.textOcrResult.setText("⚠️ Camera failed to start: " + e.getMessage()));
+                    binding.textOcrResult.setText("Camera failed to start: " + e.getMessage()));
             }
         }, ContextCompat.getMainExecutor(requireContext()));
     }
@@ -203,7 +203,7 @@ public class ScannerFragment extends Fragment {
                 if (modelDownloadRetries <= 5 || modelDownloadRetries % 10 == 0) {
                     requireActivity().runOnUiThread(() ->
                         binding.textOcrResult.setText(
-                            "⏳ Downloading OCR model… auto-retrying"));
+                            "Downloading OCR model… auto-retrying"));
                 }
                 Log.i(TAG, "OCR model downloading (retry #" + modelDownloadRetries + ")");
                 return;
@@ -212,7 +212,7 @@ public class ScannerFragment extends Fragment {
                 // Model unavailable or unsupported device.
                 requireActivity().runOnUiThread(() -> {
                     binding.textOcrResult.setText(
-                        "⚠️ OCR model unavailable on this device.\n"
+                        "OCR model unavailable on this device.\n"
                             + "Try updating Google Play Services.");
                     isAnalysing = false;
                 });
