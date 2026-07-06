@@ -25,10 +25,11 @@ public class ProductTest {
 
     @Test
     public void paramConstructor_assignsFieldsAndDefaultsCategory() {
-        Product p = new Product("Mustard Oil", 175.0, "litre");
+        Product p = new Product("Mustard Oil", 175.0, 150.0, "litre");
 
         assertEquals("Mustard Oil", p.name);
-        assertEquals(175.0, p.currentPrice, 0.001);
+        assertEquals(175.0, p.salesPrice, 0.001);
+        assertEquals(150.0, p.purchasePrice, 0.001);
         assertEquals("litre", p.unit);
         assertEquals("General", p.category);
         assertFalse(p.isPinned);
@@ -39,13 +40,15 @@ public class ProductTest {
     @Test
     public void paramConstructor_acceptsWholeRupeeIntegerPrice() {
         // Typical kirana price: whole-rupee amount
-        Product rice = new Product("Basmati Rice 5kg", 540, "5kg");
-        assertEquals(540.0, rice.currentPrice, 0.001);
+        Product rice = new Product("Basmati Rice 5kg", 540, 500, "5kg");
+        assertEquals(540.0, rice.salesPrice, 0.001);
+        assertEquals(500.0, rice.purchasePrice, 0.001);
     }
 
     @Test
     public void paramConstructor_acceptsFractionalRupeePrice() {
-        Product sugar = new Product("Sugar", 48.50, "kg");
-        assertEquals(48.50, sugar.currentPrice, 0.001);
+        Product sugar = new Product("Sugar", 48.50, 45.0, "kg");
+        assertEquals(48.50, sugar.salesPrice, 0.001);
+        assertEquals(45.0, sugar.purchasePrice, 0.001);
     }
 }

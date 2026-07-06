@@ -23,7 +23,7 @@ public class KiranaAiAgentTest {
     @Test
     public void parsesUpdatePriceCommand() throws JSONException {
         String json = "{\"action\":\"update_price\",\"product\":\"Mustard Oil\","
-            + "\"price\":175,\"unit\":null,"
+            + "\"sales_price\":175,\"purchase_price\":150,\"unit\":null,"
             + "\"acknowledgement\":\"Updated Mustard Oil to ₹175.\"}";
 
         KiranaAiAgent.ParsedCommand cmd =
@@ -31,7 +31,8 @@ public class KiranaAiAgentTest {
 
         assertEquals("update_price", cmd.action);
         assertEquals("Mustard Oil", cmd.product);
-        assertEquals(175.0, cmd.price, 0.001);
+        assertEquals(175.0, cmd.salesPrice, 0.001);
+        assertEquals(150.0, cmd.purchasePrice, 0.001);
         assertEquals("", cmd.unit);          // null in JSON → default ""
         assertEquals("Updated Mustard Oil to ₹175.", cmd.acknowledgement);
         assertEquals(TRANSCRIPT, cmd.rawTranscript);
@@ -40,7 +41,7 @@ public class KiranaAiAgentTest {
     @Test
     public void parsesAddProductCommandWithUnit() throws JSONException {
         String json = "{\"action\":\"add_product\",\"product\":\"Atta 5kg\","
-            + "\"price\":280,\"unit\":\"5kg\","
+            + "\"sales_price\":280,\"purchase_price\":null,\"unit\":\"5kg\","
             + "\"acknowledgement\":\"Added Atta 5kg at ₹280.\"}";
 
         KiranaAiAgent.ParsedCommand cmd =
@@ -48,7 +49,8 @@ public class KiranaAiAgentTest {
 
         assertEquals("add_product", cmd.action);
         assertEquals("Atta 5kg", cmd.product);
-        assertEquals(280.0, cmd.price, 0.001);
+        assertEquals(280.0, cmd.salesPrice, 0.001);
+        assertEquals(-1.0, cmd.purchasePrice, 0.001);
         assertEquals("5kg", cmd.unit);
         assertEquals("Added Atta 5kg at ₹280.", cmd.acknowledgement);
     }
@@ -56,19 +58,20 @@ public class KiranaAiAgentTest {
     @Test
     public void parsesQueryPriceCommandWithNullPrice() throws JSONException {
         String json = "{\"action\":\"query_price\",\"product\":\"Basmati Rice\","
-            + "\"price\":null,\"unit\":null}";
+            + "\"sales_price\":null,\"purchase_price\":null,\"unit\":null}";
 
         KiranaAiAgent.ParsedCommand cmd =
             KiranaAiAgent.parseResponseJson(json, "basmati rice ki price kya hai");
 
         assertEquals("query_price", cmd.action);
         assertEquals("Basmati Rice", cmd.product);
-        assertEquals(-1.0, cmd.price, 0.001); // null price resolved to -1
+        assertEquals(-1.0, cmd.salesPrice, 0.001); // null price resolved to -1
+        assertEquals(-1.0, cmd.purchasePrice, 0.001);
     }
 
     @Test
     public void parsesUnknownAction() throws JSONException {
-        String json = "{\"action\":\"unknown\",\"product\":\"\",\"price\":null,\"unit\":null}";
+        String json = "{\"action\":\"unknown\",\"product\":\"\",\"sales_price\":null,\"purchase_price\":null,\"unit\":null}";
 
         KiranaAiAgent.ParsedCommand cmd =
             KiranaAiAgent.parseResponseJson(json, "...");
@@ -78,18 +81,18 @@ public class KiranaAiAgentTest {
 
     @Test
     public void missingActionField_defaultsToUnknown() throws JSONException {
-        String json = "{\"product\":\"Sugar\",\"price\":48}";
+        String json = "{\"product\":\"Sugar\",\"sales_price\":48}";
 
         KiranaAiAgent.ParsedCommand cmd =
             KiranaAiAgent.parseResponseJson(json, "sugar 48");
 
         assertEquals("unknown", cmd.action);
-        assertEquals(48.0, cmd.price, 0.001);
+        assertEquals(48.0, cmd.salesPrice, 0.001);
     }
 
     @Test
     public void missingAcknowledgement_usesDefaultFallback() throws JSONException {
-        String json = "{\"action\":\"update_price\",\"product\":\"Sugar\",\"price\":48}";
+        String json = "{\"action\":\"update_price\",\"product\":\"Sugar\",\"sales_price\":48}";
 
         KiranaAiAgent.ParsedCommand cmd =
             KiranaAiAgent.parseResponseJson(json, "sugar");
@@ -101,7 +104,7 @@ public class KiranaAiAgentTest {
     @Test
     public void stripsMarkdownJsonFencing() throws JSONException {
         String fenced = "```json\n"
-            + "{\"action\":\"update_price\",\"product\":\"Toor Dal\",\"price\":140}"
+            + "{\"action\":\"update_price\",\"product\":\"Toor Dal\",\"sales_price\":140}"
             + "\n```";
 
         KiranaAiAgent.ParsedCommand cmd =
@@ -109,13 +112,13 @@ public class KiranaAiAgentTest {
 
         assertEquals("update_price", cmd.action);
         assertEquals("Toor Dal", cmd.product);
-        assertEquals(140.0, cmd.price, 0.001);
+        assertEquals(140.0, cmd.salesPrice, 0.001);
     }
 
     @Test
     public void stripsBareFencing() throws JSONException {
         String fenced = "```\n"
-            + "{\"action\":\"update_price\",\"product\":\"Toor Dal\",\"price\":140}"
+            + "{\"action\":\"update_price\",\"product\":\"Toor Dal\",\"sales_price\":140}"
             + "\n```";
 
         KiranaAiAgent.ParsedCommand cmd =
