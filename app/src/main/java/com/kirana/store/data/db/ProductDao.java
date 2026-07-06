@@ -41,8 +41,8 @@ public interface ProductDao {
     @Query("SELECT * FROM products ORDER BY lastUpdated DESC LIMIT 10")
     LiveData<List<Product>> getRecentlyUpdatedProducts();
 
-    @Query("UPDATE products SET currentPrice = :price, lastUpdated = :timestamp WHERE id = :id")
-    void updatePrice(int id, double price, long timestamp);
+    @Query("UPDATE products SET salesPrice = :salesPrice, purchasePrice = :purchasePrice, lastUpdated = :timestamp WHERE id = :id")
+    void updatePrice(int id, double salesPrice, double purchasePrice, long timestamp);
 
     @Query("SELECT COUNT(*) FROM products")
     int getProductCount();

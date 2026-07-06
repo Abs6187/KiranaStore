@@ -41,7 +41,7 @@ public class PricesFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
 
         adapter = new PriceListAdapter(
-            (product, newPrice) -> viewModel.updatePrice(product.id, newPrice, "manual", null),
+            (product, newPrice) -> viewModel.updatePrice(product.id, newPrice, product.purchasePrice, "manual", null),
             product -> { /* long press handled via bottom sheet in DashboardFragment */ }
         );
         binding.recyclerPrices.setLayoutManager(new LinearLayoutManager(requireContext()));

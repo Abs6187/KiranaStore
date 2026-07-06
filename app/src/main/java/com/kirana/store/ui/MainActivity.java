@@ -24,6 +24,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.kirana.store.R;
 import com.kirana.store.ai.GeminiConfig;
@@ -265,16 +266,25 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
     // ── AI Command Handler ────────────────────────────────────────────────────
 
     private void handleParsedCommand(KiranaAiAgent.ParsedCommand cmd) {
-        if ("update_price".equals(cmd.action) && !cmd.product.isEmpty() && cmd.price > 0) {
+        if ("update_price".equals(cmd.action) && !cmd.product.isEmpty() && (cmd.salesPrice > 0 || cmd.purchasePrice > 0)) {
             // Find closest matching product and update price
             productRepository.getAllProductNamesSync_Async(names -> {
                 // Use string contains first, then Levenshtein for best match
                 String bestMatch = FuzzyMatcher.findBestMatch(cmd.product, names);
                 if (bestMatch != null) {
-                    updatePriceByName(bestMatch, cmd.price, cmd.rawTranscript);
-                    voiceManager.speak(cmd.acknowledgement);
-                    Snackbar.make(binding.getRoot(),
-                        "✅ " + cmd.acknowledgement, Snackbar.LENGTH_SHORT).show();
+                    new MaterialAlertDialogBuilder(this)
+                        .setTitle("Confirm AI Action")
+                        .setMessage("Update price for " + bestMatch + "?\n" +
+                                "Sales Price: ₹" + (cmd.salesPrice > 0 ? cmd.salesPrice : "-") + "\n" +
+                                "Purchase Price: ₹" + (cmd.purchasePrice > 0 ? cmd.purchasePrice : "-"))
+                        .setPositiveButton("Confirm", (dialog, which) -> {
+                            updatePriceByName(bestMatch, cmd.salesPrice, cmd.purchasePrice, cmd.rawTranscript);
+                            voiceManager.speak(cmd.acknowledgement);
+                            Snackbar.make(binding.getRoot(),
+                                "✅ " + cmd.acknowledgement, Snackbar.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
                 } else {
                     voiceManager.speak("Product not found. Please add it manually.");
                     Snackbar.make(binding.getRoot(),
@@ -283,11 +293,22 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
                 }
             });
         } else if ("add_product".equals(cmd.action) && !cmd.product.isEmpty()) {
-            dashboardViewModel.triggerAddProduct(cmd.product,
-                cmd.price > 0 ? cmd.price : 0, cmd.unit != null ? cmd.unit : "");
-            voiceManager.speak(cmd.acknowledgement);
-            Snackbar.make(binding.getRoot(), "✅ " + cmd.acknowledgement,
-                Snackbar.LENGTH_SHORT).show();
+            new MaterialAlertDialogBuilder(this)
+                .setTitle("Confirm AI Action")
+                .setMessage("Add new product: " + cmd.product + "?\n" +
+                        "Sales Price: ₹" + (cmd.salesPrice > 0 ? cmd.salesPrice : "-") + "\n" +
+                        "Purchase Price: ₹" + (cmd.purchasePrice > 0 ? cmd.purchasePrice : "-"))
+                .setPositiveButton("Confirm", (dialog, which) -> {
+                    dashboardViewModel.triggerAddProduct(cmd.product,
+                        cmd.salesPrice > 0 ? cmd.salesPrice : 0, 
+                        cmd.purchasePrice > 0 ? cmd.purchasePrice : 0, 
+                        cmd.unit != null ? cmd.unit : "");
+                    voiceManager.speak(cmd.acknowledgement);
+                    Snackbar.make(binding.getRoot(), "✅ " + cmd.acknowledgement,
+                        Snackbar.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
         } else {
             voiceManager.speak("Sorry, I didn't understand that command.");
             Snackbar.make(binding.getRoot(), "Unrecognised command: " + cmd.action,
@@ -295,8 +316,8 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
         }
     }
 
-    private void updatePriceByName(String productName, double price, String note) {
-        dashboardViewModel.updatePriceByName(productName, price, "voice", note);
+    private void updatePriceByName(String productName, double salesPrice, double purchasePrice, String note) {
+        dashboardViewModel.updatePriceByName(productName, salesPrice, purchasePrice, "voice", note);
     }
 
     private void vibrateShort() {

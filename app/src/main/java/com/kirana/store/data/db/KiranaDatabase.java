@@ -21,7 +21,7 @@ import com.kirana.store.data.model.Product;
  */
 @Database(
     entities = {Product.class, PriceHistory.class},
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(DateConverter.class)

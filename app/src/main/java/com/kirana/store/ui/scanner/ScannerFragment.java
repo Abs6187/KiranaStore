@@ -270,7 +270,7 @@ public class ScannerFragment extends Fragment {
         binding.btnConfirmScan.setOnClickListener(v -> {
             // Apply all detected price updates via repository
             for (OcrPriceItem item : items) {
-                viewModel.updatePriceByName(item.label, item.price, "ocr_scan", "OCR Receipt Scan");
+                viewModel.updatePriceByName(item.label, item.price, 0, "ocr_scan", "OCR Receipt Scan");
             }
             Toast.makeText(requireContext(),
                 items.size() + " price(s) updated from scan", Toast.LENGTH_SHORT).show();

@@ -67,7 +67,7 @@ public class PriceListAdapter extends ListAdapter<Product, PriceListAdapter.Prod
 
         void bind(Product product) {
             binding.textProductName.setText(product.name);
-            binding.textPrice.setText("₹" + formatPrice(product.currentPrice));
+            binding.textPrice.setText("₹" + formatPrice(product.salesPrice));
             binding.textUnit.setText(
                 TextUtils.isEmpty(product.unit) ? "" : "/ " + product.unit);
             binding.textLastUpdated.setText(
@@ -92,7 +92,7 @@ public class PriceListAdapter extends ListAdapter<Product, PriceListAdapter.Prod
             if (visible) {
                 binding.layoutInlineEdit.setVisibility(View.GONE);
             } else {
-                binding.editNewPrice.setText(String.valueOf((int) product.currentPrice));
+                binding.editNewPrice.setText(String.valueOf((int) product.salesPrice));
                 binding.layoutInlineEdit.setVisibility(View.VISIBLE);
                 binding.editNewPrice.requestFocus();
 
@@ -133,7 +133,8 @@ public class PriceListAdapter extends ListAdapter<Product, PriceListAdapter.Prod
             }
             @Override
             public boolean areContentsTheSame(@NonNull Product a, @NonNull Product b) {
-                return a.currentPrice == b.currentPrice &&
+                return a.salesPrice == b.salesPrice &&
+                    a.purchasePrice == b.purchasePrice &&
                     a.name.equals(b.name) &&
                     a.isPinned == b.isPinned;
             }

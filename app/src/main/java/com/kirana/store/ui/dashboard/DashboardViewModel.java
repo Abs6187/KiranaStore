@@ -38,8 +38,8 @@ public class DashboardViewModel extends AndroidViewModel {
 
     // ── Product operations ────────────────────────────────────────────────────
 
-    public void addProduct(String name, double price, String unit) {
-        Product p = new Product(name, price, unit);
+    public void addProduct(String name, double salesPrice, double purchasePrice, String unit) {
+        Product p = new Product(name, salesPrice, purchasePrice, unit);
         repository.insert(p, id -> {
             if (id > 0) {
                 new Handler(Looper.getMainLooper()).post(() ->
@@ -57,25 +57,25 @@ public class DashboardViewModel extends AndroidViewModel {
     }
 
     /** Update price by product ID – direct API for price cards. */
-    public void updatePrice(int productId, double newPrice, String source, String note) {
-        repository.updatePrice(productId, newPrice, source, note);
+    public void updatePrice(int productId, double salesPrice, double purchasePrice, String source, String note) {
+        repository.updatePrice(productId, salesPrice, purchasePrice, source, note);
     }
 
     /** Update price by product name – used by voice command routing from MainActivity. */
-    public void updatePriceByName(String productName, double price, String source, String note) {
+    public void updatePriceByName(String productName, double salesPrice, double purchasePrice, String source, String note) {
         if (allProducts.getValue() == null) return;
         for (Product p : allProducts.getValue()) {
             if (p.name.equalsIgnoreCase(productName)) {
-                repository.updatePrice(p.id, price, source, note);
-                statusMessage.setValue("Updated " + productName + " → ₹" + price);
+                repository.updatePrice(p.id, salesPrice, purchasePrice, source, note);
+                statusMessage.setValue("Updated " + productName + " → ₹" + salesPrice);
                 return;
             }
         }
     }
 
     /** Trigger add-product dialog from voice command (consumed by DashboardFragment). */
-    public void triggerAddProduct(String name, double price, String unit) {
-        addProductTrigger.setValue(new AddProductEvent(name, price, unit));
+    public void triggerAddProduct(String name, double salesPrice, double purchasePrice, String unit) {
+        addProductTrigger.setValue(new AddProductEvent(name, salesPrice, purchasePrice, unit));
     }
 
     public LiveData<AddProductEvent> getAddProductTrigger() { return addProductTrigger; }
@@ -89,13 +89,15 @@ public class DashboardViewModel extends AndroidViewModel {
 
     public static class AddProductEvent {
         public final String name;
-        public final double price;
+        public final double salesPrice;
+        public final double purchasePrice;
         public final String unit;
         public boolean consumed = false;
 
-        public AddProductEvent(String name, double price, String unit) {
+        public AddProductEvent(String name, double salesPrice, double purchasePrice, String unit) {
             this.name = name;
-            this.price = price;
+            this.salesPrice = salesPrice;
+            this.purchasePrice = purchasePrice;
             this.unit = unit;
         }
     }

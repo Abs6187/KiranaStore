@@ -61,7 +61,7 @@ public class DashboardFragment extends Fragment {
     private void setupRecyclerView() {
         adapter = new PriceListAdapter(
             // On price tap – inline edit
-            (product, newPrice) -> viewModel.updatePrice(product.id, newPrice, "manual", null),
+            (product, newPrice) -> viewModel.updatePrice(product.id, newPrice, 0, "manual", null),
             // On item long-press – options
             product -> showProductOptions(product)
         );
@@ -101,7 +101,7 @@ public class DashboardFragment extends Fragment {
         viewModel.getAddProductTrigger().observe(getViewLifecycleOwner(), event -> {
             if (event != null && !event.consumed) {
                 event.consumed = true;
-                showAddProductDialog(event.name, event.price, event.unit);
+                showAddProductDialog(event.name, event.salesPrice, event.purchasePrice, event.unit);
             }
         });
 
@@ -113,7 +113,7 @@ public class DashboardFragment extends Fragment {
     }
 
     private void setupAddButton() {
-        binding.fabAddProduct.setOnClickListener(v -> showAddProductDialog("", 0, ""));
+        binding.fabAddProduct.setOnClickListener(v -> showAddProductDialog("", 0, 0, ""));
 
         // Gear icon → navigate to Settings screen
         binding.btnSettings.setOnClickListener(v ->
@@ -121,7 +121,7 @@ public class DashboardFragment extends Fragment {
                 .navigate(R.id.navigation_settings));
     }
 
-    private void showAddProductDialog(String prefillName, double prefillPrice, String prefillUnit) {
+    private void showAddProductDialog(String prefillName, double prefillSalesPrice, double prefillPurchasePrice, String prefillUnit) {
         BottomSheetDialog dialog = new BottomSheetDialog(requireContext(),
             R.style.ThemeOverlay_KiranaStore_BottomSheet);
         DialogAddProductBinding dialogBinding =
@@ -129,29 +129,32 @@ public class DashboardFragment extends Fragment {
         dialog.setContentView(dialogBinding.getRoot());
 
         if (!prefillName.isEmpty()) dialogBinding.editProductName.setText(prefillName);
-        if (prefillPrice > 0) dialogBinding.editProductPrice.setText(String.valueOf((int)prefillPrice));
+        if (prefillSalesPrice > 0) dialogBinding.editProductPrice.setText(String.valueOf((int)prefillSalesPrice));
+        if (prefillPurchasePrice > 0) dialogBinding.editProductPurchasePrice.setText(String.valueOf((int)prefillPurchasePrice));
         if (prefillUnit != null && !prefillUnit.isEmpty())
             dialogBinding.editProductUnit.setText(prefillUnit);
 
         dialogBinding.btnSaveProduct.setOnClickListener(v -> {
             String name = dialogBinding.editProductName.getText().toString().trim();
-            String priceStr = dialogBinding.editProductPrice.getText().toString().trim();
+            String salesPriceStr = dialogBinding.editProductPrice.getText().toString().trim();
+            String purchasePriceStr = dialogBinding.editProductPurchasePrice.getText().toString().trim();
             String unit = dialogBinding.editProductUnit.getText().toString().trim();
 
             if (name.isEmpty()) {
                 dialogBinding.editProductName.setError("Product name required");
                 return;
             }
-            if (priceStr.isEmpty()) {
+            if (salesPriceStr.isEmpty()) {
                 dialogBinding.editProductPrice.setError("Price required");
                 return;
             }
 
             try {
-                double price = Double.parseDouble(priceStr);
-                viewModel.addProduct(name, price, unit);
+                double salesPrice = Double.parseDouble(salesPriceStr);
+                double purchasePrice = purchasePriceStr.isEmpty() ? 0 : Double.parseDouble(purchasePriceStr);
+                viewModel.addProduct(name, salesPrice, purchasePrice, unit);
                 dialog.dismiss();
-                Snackbar.make(requireView(), "✅ " + name + " added at ₹" + (int)price,
+                Snackbar.make(requireView(), "✅ " + name + " added at ₹" + (int)salesPrice,
                     Snackbar.LENGTH_SHORT).show();
             } catch (NumberFormatException e) {
                 dialogBinding.editProductPrice.setError("Invalid price");
@@ -182,19 +185,22 @@ public class DashboardFragment extends Fragment {
         dialogBinding.textDialogTitle.setText("Edit Price: " + product.name);
         dialogBinding.editProductName.setText(product.name);
         dialogBinding.editProductName.setEnabled(false);
-        dialogBinding.editProductPrice.setText(String.valueOf((int) product.currentPrice));
+        dialogBinding.editProductPrice.setText(String.valueOf((int) product.salesPrice));
+        dialogBinding.editProductPurchasePrice.setText(String.valueOf((int) product.purchasePrice));
         dialogBinding.editProductUnit.setText(product.unit);
 
         dialogBinding.btnSaveProduct.setText("Update Price");
         dialogBinding.btnSaveProduct.setOnClickListener(v -> {
-            String priceStr = dialogBinding.editProductPrice.getText().toString().trim();
-            if (priceStr.isEmpty()) { dialogBinding.editProductPrice.setError("Required"); return; }
+            String salesPriceStr = dialogBinding.editProductPrice.getText().toString().trim();
+            String purchasePriceStr = dialogBinding.editProductPurchasePrice.getText().toString().trim();
+            if (salesPriceStr.isEmpty()) { dialogBinding.editProductPrice.setError("Required"); return; }
             try {
-                double newPrice = Double.parseDouble(priceStr);
-                viewModel.updatePrice(product.id, newPrice, "manual", null);
+                double newSalesPrice = Double.parseDouble(salesPriceStr);
+                double newPurchasePrice = purchasePriceStr.isEmpty() ? 0 : Double.parseDouble(purchasePriceStr);
+                viewModel.updatePrice(product.id, newSalesPrice, newPurchasePrice, "manual", null);
                 dialog.dismiss();
                 Snackbar.make(requireView(),
-                    "✅ " + product.name + " → ₹" + (int) newPrice, Snackbar.LENGTH_SHORT).show();
+                    "✅ " + product.name + " → ₹" + (int) newSalesPrice, Snackbar.LENGTH_SHORT).show();
             } catch (NumberFormatException e) {
                 dialogBinding.editProductPrice.setError("Invalid price");
             }

@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * Core entity for a Kirana product.
  * <p>
- * Design decision: {@code currentPrice} is the live price displayed on the dashboard.
+ * Design decision: {@code salesPrice} is the live price displayed on the dashboard.
  * All previous prices are stored in {@link PriceHistory}. This keeps the main table
  * lean while preserving full audit history for market-fluctuation tracking.
  */
@@ -26,7 +26,10 @@ public class Product {
     public String name;
 
     /** Current selling price in ₹ (Rupees) */
-    public double currentPrice;
+    public double salesPrice;
+
+    /** Purchase price from supplier/wholesaler in ₹ (Rupees) */
+    public double purchasePrice;
 
     /** Optional unit of measure (e.g., "kg", "litre", "packet") */
     public String unit;
@@ -53,9 +56,10 @@ public class Product {
         this.category = "General";
     }
 
-    public Product(String name, double currentPrice, String unit) {
+    public Product(String name, double salesPrice, double purchasePrice, String unit) {
         this.name = name;
-        this.currentPrice = currentPrice;
+        this.salesPrice = salesPrice;
+        this.purchasePrice = purchasePrice;
         this.unit = unit;
         this.category = "General";
         this.lastUpdated = new Date();

@@ -36,8 +36,11 @@ public class PriceHistory {
     /** FK → products.id */
     public int productId;
 
-    /** Price at the time of this entry */
-    public double price;
+    /** Sales Price at the time of this entry */
+    public double salesPrice;
+
+    /** Purchase Price at the time of this entry */
+    public double purchasePrice;
 
     /** How the price was changed: "manual", "voice", "ocr_scan" */
     public String source;
@@ -53,9 +56,10 @@ public class PriceHistory {
         this.timestamp = new Date();
     }
 
-    public PriceHistory(int productId, double price, String source, String note) {
+    public PriceHistory(int productId, double salesPrice, double purchasePrice, String source, String note) {
         this.productId = productId;
-        this.price = price;
+        this.salesPrice = salesPrice;
+        this.purchasePrice = purchasePrice;
         this.source = source;
         this.note = note;
         this.timestamp = new Date();

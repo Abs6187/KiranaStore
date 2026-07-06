@@ -56,18 +56,19 @@ public class KiranaAiAgent {
         "The JSON must have these fields:\n" +
         "  action: \"update_price\" | \"add_product\" | \"query_price\" | \"unknown\"\n" +
         "  product: the product name (capitalised, in English)\n" +
-        "  price: a number (price in Indian Rupees) – null if not applicable\n" +
+        "  sales_price: a number (selling price to customer) – null if not applicable\n" +
+        "  purchase_price: a number (cost from supplier) – null if not applicable\n" +
         "  unit: unit of measure (e.g. kg, litre, packet) – null if not mentioned\n" +
         "  acknowledgement: a SHORT, friendly confirmation sentence in English (max 10 words)\n" +
         "\n" +
         "Examples:\n" +
-        "Input: 'mustard oil ka price 175 rupee karo'\n" +
-        "Output: {\"action\":\"update_price\",\"product\":\"Mustard Oil\",\"price\":175,\"unit\":null," +
-        "\"acknowledgement\":\"Updated Mustard Oil to ₹175.\"}\n" +
+        "Input: 'mustard oil ki sales price 175 and purchase price 150 karo'\n" +
+        "Output: {\"action\":\"update_price\",\"product\":\"Mustard Oil\",\"sales_price\":175,\"purchase_price\":150,\"unit\":null," +
+        "\"acknowledgement\":\"Ready to update Mustard Oil.\"}\n" +
         "\n" +
         "Input: 'atta 5 kg 280 rupees add karo'\n" +
-        "Output: {\"action\":\"add_product\",\"product\":\"Atta 5kg\",\"price\":280,\"unit\":\"5kg\"," +
-        "\"acknowledgement\":\"Added Atta 5kg at ₹280.\"}\n" +
+        "Output: {\"action\":\"add_product\",\"product\":\"Atta 5kg\",\"sales_price\":280,\"purchase_price\":null,\"unit\":\"5kg\"," +
+        "\"acknowledgement\":\"Ready to add Atta 5kg.\"}\n" +
         "\n" +
         "Respond ONLY with the JSON object. No markdown. No extra text.";
 
@@ -167,7 +168,8 @@ public class KiranaAiAgent {
         ParsedCommand cmd = new ParsedCommand();
         cmd.action = json.optString("action", "unknown");
         cmd.product = json.optString("product", "");
-        cmd.price = json.isNull("price") ? -1 : json.optDouble("price", -1);
+        cmd.salesPrice = json.isNull("sales_price") ? -1 : json.optDouble("sales_price", -1);
+        cmd.purchasePrice = json.isNull("purchase_price") ? -1 : json.optDouble("purchase_price", -1);
         cmd.unit = json.optString("unit", "");
         cmd.acknowledgement = json.optString("acknowledgement",
             "Done. " + cmd.product + " updated.");
@@ -180,7 +182,8 @@ public class KiranaAiAgent {
     public static class ParsedCommand {
         public String action;           // "update_price", "add_product", "query_price", "unknown"
         public String product;          // canonical product name
-        public double price;            // ₹ value, -1 if not specified
+        public double salesPrice;       // ₹ value, -1 if not specified
+        public double purchasePrice;    // ₹ value, -1 if not specified
         public String unit;             // unit of measure
         public String acknowledgement;  // TTS readback sentence
         public String rawTranscript;    // original voice text
