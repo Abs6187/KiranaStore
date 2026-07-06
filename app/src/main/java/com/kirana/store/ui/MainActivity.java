@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
         updateFabIcon(R.drawable.ic_mic_active);
         vibrateShort();
         voiceManager.startListening();
-        Snackbar.make(binding.getRoot(), "🎤 Listening... speak now", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(binding.getRoot(), "Listening... speak now", Snackbar.LENGTH_SHORT).show();
     }
 
     private void stopVoiceListening() {
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
         }
 
         // Show processing indicator
-        Snackbar.make(binding.getRoot(), "🤖 Processing: \"" + text + "\"",
+        Snackbar.make(binding.getRoot(), "Processing: \"" + text + "\"",
             Snackbar.LENGTH_SHORT).show();
 
         // Fetch product names for AI context, then call AI

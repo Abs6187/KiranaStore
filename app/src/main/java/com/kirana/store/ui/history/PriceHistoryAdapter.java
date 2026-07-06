@@ -41,7 +41,7 @@ public class PriceHistoryAdapter extends ListAdapter<PriceHistory, PriceHistoryA
         VH(ItemHistoryBinding b) { super(b.getRoot()); this.b = b; }
 
         void bind(PriceHistory h) {
-            b.textHistoryPrice.setText("₹" + formatPrice(h.price));
+            b.textHistoryPrice.setText("₹" + formatPrice(h.salesPrice));
             b.textHistorySource.setText(sourceLabel(h.source));
             b.textHistoryDate.setText(h.timestamp != null ? DATE_FMT.format(h.timestamp) : "");
             b.textHistoryNote.setText(h.note != null ? h.note : "");
@@ -56,9 +56,9 @@ public class PriceHistoryAdapter extends ListAdapter<PriceHistory, PriceHistoryA
     private static String sourceLabel(String source) {
         if (source == null) return "Manual";
         switch (source) {
-            case "voice":    return "🎤 Voice";
-            case "ocr_scan": return "📷 OCR Scan";
-            default:         return "✏️ Manual";
+            case "voice":    return "Voice";
+            case "ocr_scan": return "OCR Scan";
+            default:         return "Manual";
         }
     }
 
@@ -68,7 +68,7 @@ public class PriceHistoryAdapter extends ListAdapter<PriceHistory, PriceHistoryA
                 return a.id == b.id;
             }
             @Override public boolean areContentsTheSame(@NonNull PriceHistory a, @NonNull PriceHistory b) {
-                return a.price == b.price && a.productId == b.productId;
+                return a.salesPrice == b.salesPrice && a.purchasePrice == b.purchasePrice && a.productId == b.productId;
             }
         };
 }
