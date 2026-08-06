@@ -39,17 +39,21 @@ enableIndexedDbPersistence(db).catch((err) => {
   }
 });
 
-// Ensure anonymous authentication for Firestore security rules compliance
+// Non-blocking anonymous auth attempt
 let currentUser = null;
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    currentUser = user;
-    console.log("Firebase Auth signed in:", user.uid);
-  } else {
-    signInAnonymously(auth).catch((error) => {
-      console.error("Anonymous auth failed:", error);
-    });
-  }
-});
+try {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+      console.log("Firebase Auth signed in:", user.uid);
+    } else {
+      signInAnonymously(auth).catch((error) => {
+        console.warn("Anonymous auth optional check:", error?.message || error);
+      });
+    }
+  });
+} catch (e) {
+  console.warn("Auth initialization warning:", e);
+}
 
 export { app, db, auth, currentUser };

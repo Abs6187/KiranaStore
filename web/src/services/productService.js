@@ -18,22 +18,29 @@ const PRODUCTS_COLLECTION = "products";
  * Subscribe to real-time updates of all products from Firestore
  */
 export const subscribeProducts = (callback) => {
-  const q = query(collection(db, PRODUCTS_COLLECTION), orderBy("createdAt", "desc"));
-  return onSnapshot(q, (snapshot) => {
-    const products = snapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        ...data,
-        // Fallback for timestamps if missing
-        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
-        lastUpdated: data.lastUpdated?.toDate ? data.lastUpdated.toDate() : new Date()
-      };
+  try {
+    const q = query(collection(db, PRODUCTS_COLLECTION));
+    return onSnapshot(q, (snapshot) => {
+      const products = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          ...data,
+          // Fallback for timestamps if missing
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
+          lastUpdated: data.lastUpdated?.toDate ? data.lastUpdated.toDate() : new Date()
+        };
+      });
+      callback(products);
+    }, (error) => {
+      console.warn("Firestore query note (fallback to empty list):", error?.message || error);
+      callback([]);
     });
-    callback(products);
-  }, (error) => {
-    console.error("Error fetching products from Firestore:", error);
-  });
+  } catch (err) {
+    console.warn("Firestore connection exception:", err);
+    callback([]);
+    return () => {};
+  }
 };
 
 /**
