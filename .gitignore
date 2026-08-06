@@ -12,6 +12,10 @@ local.properties
 # Sensitive – never commit
 google-services.json
 local.properties
+.env
+.env*
+web/.env
+web/.env*
 
 # Gradle
 gradle-app.setting
