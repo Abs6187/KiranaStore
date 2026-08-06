@@ -35,6 +35,12 @@ key.properties
 
 # Plan / Checklist
 plan.md
+read-context.md
 
 # Firebase Admin SDK
 kirana-store-abs6187-firebase-adminsdk-fbsvc-987cc0f219.json
+
+# Web PWA
+web/node_modules/
+web/dist/
+web/.vite-temp/
