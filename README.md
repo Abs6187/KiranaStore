@@ -1,7 +1,9 @@
 # 🛒 Kirana Store Manager
 
-> **Modernised from** [`vincentbecker/Foodventory`](https://github.com/vincentbecker/Foodventory) (2018)
-> **Pivoted to**: Price-centric Kirana (Indian grocery) store management with Voice AI + OCR
+> **Modernised from** [`vincentbecker/Foodventory`](https://github.com/vincentbecker/Foodventory) (2018)  
+> **Pivoted to**: Price-centric Kirana (Indian grocery) store management with Voice AI + OCR  
+> **🌐 Web PWA Companion App**: [https://kirana-store-abs6187.web.app](https://kirana-store-abs6187.web.app)  
+> **📦 Latest Release**: [v1.2.0 GitHub Release](https://github.com/Abs6187/KiranaStore/releases/tag/v1.2.0)
 
 ---
 
@@ -9,15 +11,16 @@
 
 | Feature | Tech | Notes |
 |---|---|---|
-| **Price Dashboard** | Room + LiveData | Grid of products with ₹ prices, pinning, inline edit |
-| **Voice Commands** | Android STT (hi-IN) + Gemini 2.0 Flash | "Mustard oil 175 rupees karo" → auto-updates price |
-| **AI NLP** | Gemini 2.0 Flash via Firebase AI Logic (`googleAI()` backend) | Parses Hindi/Hinglish/English → JSON command |
-| **TTS Feedback** | Android TextToSpeech (en-IN) | Reads back confirmation aloud |
+| **🌐 Web PWA Companion** | Vite + React 18 + PWA | Installable web app synced live with Android app |
+| **⚡ Firestore Realtime Sync** | Firebase Cloud Firestore | Multi-device live catalogue & price sync |
+| **Price Dashboard** | Room + LiveData / React | Grid of products with ₹ prices, pinning, inline edit |
+| **Voice Commands** | Android STT / Web Speech + Gemini 2.0 Flash | "Mustard oil 175 rupees karo" → auto-updates price |
+| **AI NLP** | Gemini 2.0 Flash API / Firebase AI Logic | Parses Hindi/Hinglish/English → JSON command |
+| **TTS Feedback** | Android / Web SpeechSynthesis | Reads back confirmation aloud |
 | **OCR Receipt Scan** | CameraX + ML Kit Text Recognition v2 | Fully on-device, no cloud, ₹ price regex extraction |
-| **Price History** | Room PriceHistory table | Auto-timestamped every change (manual/voice/ocr) |
-| **Settings screen** | SharedPreferences (`AppPreferences`) | Runtime Gemini key override, Voice AI/Scanner toggles, diagnostics |
-| **Dark Mode** | Material Design 3 | System auto-switch light/dark theme |
-| **Firestore Sync** | Firebase free-tier | Optional cloud backup of product catalogue |
+| **Price Audit Logs** | Room / Firestore PriceHistory | Auto-timestamped history (manual/voice/ocr) |
+| **Settings screen** | SharedPreferences / LocalStorage | Runtime Gemini key override, Voice AI/Scanner toggles, diagnostics |
+| **Dark Mode** | Material Design 3 / Glassmorphic UI | System auto-switch light/dark theme |
 
 ---
 
@@ -30,9 +33,10 @@
 | `android.arch.persistence.room:1.1.1` | `androidx.room:2.8.4` |
 | `com.google.firebase:firebase-ml-vision:18.0.1` ❌ deprecated | `com.google.mlkit:text-recognition:17.3.0` ✅ |
 | Legacy Camera API | CameraX 1.4.2 |
-| No AI | Gemini 2.0 Flash via **Firebase AI Logic** (`firebase-ai`) |
-| No voice | Android native STT/TTS (free, on-device) |
+| No AI | Gemini 2.0 Flash via **Firebase AI Logic** (`firebase-ai`) & REST API |
+| No voice | Native STT/TTS (free, on-device & Web Speech) |
 | `gradle-wrapper` → Gradle 4.x | Gradle 8.6 + `libs.versions.toml` + convention plugins |
+| Native Only | **Android Native + Web PWA Companion** |
 
 > ⚠️ The legacy `com.google.ai.client.generativeai:0.9.0` SDK reached **end-of-life on 2025-11-30** and has been removed. `firebase-vertexai` (also deprecated) was replaced by `firebase-ai`. Both are now managed by Firebase BOM 34.15.0.
 
@@ -40,7 +44,11 @@
 
 ## 🚀 Quick Start
 
-### 1. Prerequisites
+### 1. Web PWA Live URL
+Access the live Web PWA immediately without installation:
+👉 **[https://kirana-store-abs6187.web.app](https://kirana-store-abs6187.web.app)**
+
+### 2. Prerequisites & Firebase Setup
 
 ```bash
 # Install gcloud CLI
@@ -50,7 +58,7 @@
 npm install -g firebase-tools
 ```
 
-### 2. Firebase + gcloud Setup (Windows)
+### 3. Firebase + gcloud Setup (Windows)
 
 ```bat
 cd KiranaStore
@@ -64,29 +72,11 @@ bash scripts/setup_firebase.sh
 
 **This script will:**
 1. `gcloud auth login` – authenticate
-2. Create/set your GCP project
+2. Create/set your GCP project (`kirana-store-abs6187`)
 3. Enable `firebase.googleapis.com`, `firestore.googleapis.com`
 4. `firebase login` + link project
 5. Deploy Firestore security rules
-6. Guide you to download `google-services.json`
-
-### 3. Manual gcloud Commands
-
-```bash
-# Authenticate
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
-
-# Enable APIs
-gcloud services enable firebase.googleapis.com \
-  firestore.googleapis.com \
-  firebaseappcheck.googleapis.com
-
-# Firebase init + deploy rules
-firebase login
-firebase use YOUR_PROJECT_ID
-firebase deploy --only firestore:rules
-```
+6. Deploy Web PWA to Firebase Hosting
 
 ### 4. Gemini API Key
 
@@ -98,83 +88,7 @@ firebase deploy --only firestore:rules
    ```
    > ⚠️ `local.properties` is in `.gitignore` – **never commit your key**
 
-   **Alternative**: launch the app, tap the ⚙️ gear icon on the Dashboard header, and paste the key in **Settings → Gemini API Key**. The runtime override takes effect immediately without a rebuild.
-
-### 5. Add google-services.json
-
-1. [Firebase Console](https://console.firebase.google.com) → Your project → Project Settings
-2. Add Android app with package: `com.kirana.store`
-3. Download `google-services.json` → place in `app/`
-
-### 6. Open in Android Studio
-
-- Open folder `KiranaStore/` in Android Studio Hedgehog or later
-- Click **Sync Project with Gradle Files**
-- Build → Run on device (API 26+)
-
----
-
-## ⚙️ Configuration & Troubleshooting
-
-A **Settings** screen is available from the gear icon on the Dashboard header.
-
-### Gemini API key (Voice AI)
-The Voice AI feature uses the **Gemini Developer API** via the Firebase AI Logic `googleAI()`
-backend (the free-tier path — not Vertex AI). The key is resolved in this priority order:
-
-1. **Runtime override** — paste a key in Settings → "Gemini API Key" → Save (stored in
-   SharedPreferences; takes effect immediately).
-2. **`local.properties`** → `GEMINI_API_KEY=...` → injected into `BuildConfig` by the
-   secrets-gradle-plugin at build time.
-
-> ℹ️ The checked-in `google-services.json` holds a **Firebase Web API key** (for
-> Analytics/Firestore), *not* a Gemini key. The Gemini key is wired through a secondary
-> `FirebaseApp` (see `ai/GeminiConfig.java`), so editing `google-services.json` is not required.
-
-Use **Settings → "🔍 Test Gemini Connection"** to verify the key works end-to-end.
-
-### OCR / Scanner not working?
-The ML Kit text-recognition model is **downloaded lazily by Google Play Services on first
-use**. On first launch the scanner may show "⏳ Downloading OCR model…" and auto-retry. If it
-stays stuck:
-- Confirm Google Play Services is up to date (Settings → "Google Play Services: ✅ Available").
-- Use **Settings → "📷 Check OCR Model Status"** to probe the model.
-- OCR requires a device **with** Google Play Services (not AOSP-only devices).
-
-### Voice/Scanner toggles
-Both features can be independently enabled/disabled from Settings; the app respects these
-toggles at runtime.
-
----
-
-## 🧪 Testing
-
-The project ships with a JVM unit-test suite and an instrumented (device/emulator) suite.
-All assertions use ₹ prices and Indian product names.
-
-### Unit tests (no device, no Firebase required)
-
-Pure-logic tests that run on the JVM in seconds:
-
-```bash
-./gradlew :app:testDebugUnitTest
-```
-
-Covers: `Product` / `PriceHistory` entity defaults, `DateConverter` round-trips,
-`FuzzyMatcher` (substring + Levenshtein matching), `KiranaAiAgent` JSON parsing
-(update_price / add_product / query_price / unknown, markdown-fence stripping), and
-`VoiceManager` STT error-code mapping.
-
-### Instrumented tests (device or emulator required)
-
-Run against an in-memory Room DB — **no `google-services.json` needed**:
-
-```bash
-./gradlew :app:connectedDebugAndroidTest
-```
-
-Covers: `ProductDao` insert/update/delete, `PriceHistoryDao` latest-entry + `ON DELETE
-CASCADE`, and an Espresso test of the Dashboard add-product → ₹175 flow.
+   **Alternative**: launch the app (or Web PWA Settings modal), tap the ⚙️ gear icon, and paste the key in **Settings → Gemini API Key**.
 
 ---
 
@@ -193,47 +107,27 @@ CASCADE`, and an Espresso test of the Dashboard add-product → ₹175 flow.
 
 ```
 KiranaStore/
-├── app/
-│   ├── build.gradle              # Convention plugins + catalog aliases only
-│   ├── proguard-rules.pro
-│   └── src/
-│       ├── main/java/com/kirana/store/
-│       │   ├── KiranaApp.java           # Application class
-│       │   ├── ai/
-│       │   │   ├── KiranaAiAgent.java   # Gemini 2.0 Flash NLP (googleAI backend)
-│       │   │   └── GeminiConfig.java    # Secondary FirebaseApp + key resolution
-│       │   ├── voice/VoiceManager.java  # STT (hi-IN) + TTS
-│       │   ├── util/
-│       │   │   ├── FuzzyMatcher.java    # Levenshtein product-name matching
-│       │   │   └── AppPreferences.java  # Runtime toggles + Gemini key override
-│       │   ├── data/
-│       │   │   ├── model/               # Product, PriceHistory
-│       │   │   ├── db/                  # Room DAOs, KiranaDatabase
-│       │   │   └── repository/          # ProductRepository
-│       │   └── ui/
-│       │       ├── MainActivity.java    # Nav + Voice FAB
-│       │       ├── dashboard/           # Price grid + gear icon → Settings
-│       │       ├── prices/              # Full list + inline edit
-│       │       ├── scanner/             # CameraX + ML Kit OCR (Play Services guard)
-│       │       ├── history/             # Timestamped price log
-│       │       └── settings/            # Gemini key override, toggles, diagnostics
-│       ├── main/res/                    # Layouts, drawables, themes
-│       ├── test/                        # JVM unit tests
-│       └── androidTest/                 # Instrumented (device) tests
-├── build-logic/                  # Composite build – convention plugins
-│   └── convention/src/main/groovy/
-│       ├── kirana.android.application.gradle
-│       └── kirana.android.room.gradle
-├── gradle/libs.versions.toml     # Centralised version catalog
+├── app/                          # Native Android App
+│   ├── src/main/java/com/kirana/store/
+│   │   ├── ai/KiranaAiAgent.java # Gemini 2.0 Flash NLP
+│   │   ├── voice/VoiceManager.java
+│   │   ├── data/                 # Room DB entities, DAOs, Repository
+│   │   └── ui/                   # Dashboard, Prices, Scanner, History, Settings
+├── web/                          # Web PWA Companion App
+│   ├── src/
+│   │   ├── components/           # Navbar, ProductCard, Modals, VoiceFab
+│   │   ├── services/             # Firestore, Gemini AI, Web Speech STT/TTS
+│   │   ├── firebase.js           # Firestore init & persistence
+│   │   └── App.jsx               # PWA React Application
+│   ├── vite.config.js            # Vite + Workbox PWA builder
+│   └── package.json
 ├── firestore.rules               # Firestore security rules
-├── firebase.json                 # Firebase CLI config
+├── firebase.json                 # Firebase CLI & Hosting config
 ├── scripts/
-│   ├── setup_firebase.sh         # Linux/Mac setup
-│   └── setup_firebase.bat        # Windows setup
-├── build.gradle                  # Root Gradle (plugin declarations only)
-├── settings.gradle               # includeBuild("build-logic")
+│   ├── deploy_web.bat            # Windows PWA build & deploy
+│   └── deploy_web.sh             # Linux/Mac PWA build & deploy
 ├── CHANGELOG.md                  # Release history
-└── local.defaults.properties     # API key template
+└── README.md
 ```
 
 ---
@@ -241,16 +135,15 @@ KiranaStore/
 ## 🆓 Zero Cost Architecture
 
 All core features run completely free:
-- **Database**: Room (on-device SQLite) – ₹0
+- **Database**: Room & Cloud Firestore Free Tier – ₹0
 - **OCR**: ML Kit on-device text recognition – ₹0
-- **STT**: Android native SpeechRecognizer – ₹0
-- **TTS**: Android TextToSpeech – ₹0
-- **AI**: Gemini 2.0 Flash (free tier: 15 requests/min, 1M tokens/day) – ₹0
-- **Firebase**: Spark (free) plan – ₹0
+- **STT/TTS**: Native Android & Web Speech API – ₹0
+- **AI**: Gemini 2.0 Flash (free tier: 15 requests/min) – ₹0
+- **Hosting**: Firebase Hosting (Spark plan) – ₹0
 
 ---
 
 ## 📜 License
 
-Built upon [Foodventory](https://github.com/vincentbecker/Foodventory) by vincentbecker.
+Built upon [Foodventory](https://github.com/vincentbecker/Foodventory) by vincentbecker.  
 Modernised and pivoted to Kirana Store Manager.
