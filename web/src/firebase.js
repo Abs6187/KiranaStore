@@ -14,7 +14,7 @@ const decodeKey = () => {
   if (import.meta.env.VITE_FIREBASE_API_KEY) {
     return import.meta.env.VITE_FIREBASE_API_KEY;
   }
-  return atob("QUl6YVN5RFhPTzFuN3VfbEJNVGptLW9NOFBmX0FJWmJBaDJhVExn");
+  return atob("QUl6YVN5QWlzRzNFWHJ6akhncW5rWnpXUWVUNVBKZFhKLUJ5RzQ=");
 };
 
 const firebaseConfig = {
