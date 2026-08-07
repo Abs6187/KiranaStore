@@ -1,6 +1,6 @@
 /**
  * Kirana AI Agent for Web PWA
- * Powered by Gemini 2.0 Flash REST API / Firebase AI Logic backend
+ * Powered by Gemini 2.0 Flash REST API / Backend logic
  */
 
 /**
@@ -58,7 +58,7 @@ The user speaks in Hindi, Hinglish, or English commands such as:
 - "Mustard oil 175 rupees karo" -> action: update_price, productName: "Mustard Oil", price: 175
 - "Basmati rice 280 rupees add karo" -> action: add_product, productName: "Basmati Rice", price: 280, unit: "kg"
 - "Atta ka price kitna hai?" -> action: query_price, productName: "Atta"
-- "Change sugar price to 45" -> action: update_price, productName: "Sugar", price: 45
+- "Change mustard oil to 175 rupees" -> action: update_price, productName: "Sugar", price: 45
 
 Return strictly valid JSON only (no markdown, no code fences):
 {
@@ -74,11 +74,11 @@ Return strictly valid JSON only (no markdown, no code fences):
  * Process voice text prompt through Gemini 2.0 Flash
  */
 export const processVoiceCommand = async (userTranscript, existingProducts = []) => {
-  const apiKey = localStorage.getItem("GEMINI_API_KEY") || (import.meta.env.VITE_GEMINI_API_KEY || "");
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
   if (!apiKey) {
     return {
       action: "unknown",
-      replyText: "Gemini API key missing. Please configure key in Settings."
+      replyText: "Gemini API key missing in environment configuration."
     };
   }
 
