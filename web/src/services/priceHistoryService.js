@@ -1,11 +1,7 @@
 import { 
   collection, 
   addDoc, 
-  onSnapshot, 
-  query, 
-  orderBy, 
-  serverTimestamp,
-  where
+  onSnapshot 
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -22,7 +18,7 @@ export const addPriceHistory = async ({ productId, productName, oldPrice, newPri
       oldPrice: Number(oldPrice) || 0,
       newPrice: Number(newPrice) || 0,
       changeReason,
-      changedAt: serverTimestamp()
+      changedAt: new Date()
     });
   } catch (err) {
     console.error("Error adding price history:", err);
@@ -33,22 +29,22 @@ export const addPriceHistory = async ({ productId, productName, oldPrice, newPri
  * Real-time subscription to price history logs
  */
 export const subscribePriceHistory = (callback) => {
-  const q = query(
-    collection(db, PRICE_HISTORY_COLLECTION), 
-    orderBy("changedAt", "desc")
-  );
+  const colRef = collection(db, PRICE_HISTORY_COLLECTION);
 
-  return onSnapshot(q, (snapshot) => {
+  return onSnapshot(colRef, (snapshot) => {
     const history = snapshot.docs.map((docSnap) => {
       const data = docSnap.data();
       return {
         id: docSnap.id,
         ...data,
-        changedAt: data.changedAt?.toDate ? data.changedAt.toDate() : new Date()
+        changedAt: data.changedAt?.toDate ? data.changedAt.toDate() : (data.changedAt ? new Date(data.changedAt) : new Date())
       };
     });
+
+    history.sort((a, b) => b.changedAt - a.changedAt);
     callback(history);
   }, (err) => {
     console.error("Error loading price history:", err);
+    callback([]);
   });
 };

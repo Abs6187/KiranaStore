@@ -5,9 +5,7 @@ import {
   addDoc, 
   updateDoc, 
   deleteDoc, 
-  serverTimestamp, 
-  query, 
-  orderBy 
+  serverTimestamp
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { addPriceHistory } from "./priceHistoryService";
@@ -18,29 +16,26 @@ const PRODUCTS_COLLECTION = "products";
  * Subscribe to real-time updates of all products from Firestore
  */
 export const subscribeProducts = (callback) => {
-  try {
-    const q = query(collection(db, PRODUCTS_COLLECTION));
-    return onSnapshot(q, (snapshot) => {
-      const products = snapshot.docs.map((docSnap) => {
-        const data = docSnap.data();
-        return {
-          id: docSnap.id,
-          ...data,
-          // Fallback for timestamps if missing
-          createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
-          lastUpdated: data.lastUpdated?.toDate ? data.lastUpdated.toDate() : new Date()
-        };
-      });
-      callback(products);
-    }, (error) => {
-      console.warn("Firestore query note (fallback to empty list):", error?.message || error);
-      callback([]);
+  const colRef = collection(db, PRODUCTS_COLLECTION);
+  
+  return onSnapshot(colRef, (snapshot) => {
+    const products = snapshot.docs.map((docSnap) => {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        ...data,
+        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
+        lastUpdated: data.lastUpdated?.toDate ? data.lastUpdated.toDate() : new Date()
+      };
     });
-  } catch (err) {
-    console.warn("Firestore connection exception:", err);
+
+    // Client-side sort by createdAt descending so items update instantly without index dependency
+    products.sort((a, b) => b.createdAt - a.createdAt);
+    callback(products);
+  }, (error) => {
+    console.error("Firestore products subscription error:", error);
     callback([]);
-    return () => {};
-  }
+  });
 };
 
 /**
@@ -54,8 +49,8 @@ export const addProduct = async ({ name, salesPrice, purchasePrice = 0, unit = "
     unit: unit.trim() || "kg",
     category: category.trim() || "General",
     isPinned: Boolean(isPinned),
-    createdAt: serverTimestamp(),
-    lastUpdated: serverTimestamp()
+    createdAt: new Date(), // Immediate JS Date for instant real-time sync
+    lastUpdated: new Date()
   };
 
   const docRef = await addDoc(collection(db, PRODUCTS_COLLECTION), newProd);
@@ -83,7 +78,7 @@ export const updateSalesPrice = async (productId, productName, oldPrice, newPric
   const productRef = doc(db, PRODUCTS_COLLECTION, pId);
   await updateDoc(productRef, {
     salesPrice: parsedNewPrice,
-    lastUpdated: serverTimestamp()
+    lastUpdated: new Date()
   });
 
   await addPriceHistory({
