@@ -6,8 +6,13 @@
     <dimen name="content_padding_small">8dp</dimen>
     <dimen name="text_price_large">28sp</dimen>
     <dimen name="text_product_name">14sp</dimen>
+    <dimen name="text_price_simple">34sp</dimen>
+    <dimen name="text_product_name_simple">18sp</dimen>
     <dimen name="bottom_nav_height">64dp</dimen>
     <dimen name="fab_margin">24dp</dimen>
     <dimen name="divider_height">1dp</dimen>
     <dimen name="accent_strip_height">4dp</dimen>
+    <dimen name="min_touch_target">48dp</dimen>
+    <dimen name="header_padding_horizontal">20dp</dimen>
+    <dimen name="chip_corner_radius">8dp</dimen>
 </resources>

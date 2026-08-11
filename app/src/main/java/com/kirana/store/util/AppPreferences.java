@@ -30,11 +30,13 @@ public final class AppPreferences {
     private static final String KEY_FAB_X               = "fab_x";
     private static final String KEY_FAB_Y               = "fab_y";
     private static final String KEY_UI_SCALE            = "ui_scale";
+    private static final String KEY_SIMPLE_MODE         = "simple_mode";
 
     // ── Defaults ───────────────────────────────────────────────────────────────
     private static final boolean DEFAULT_VOICE_AI   = true;
     private static final boolean DEFAULT_SCANNER    = true;
     private static final float DEFAULT_UI_SCALE     = 1.0f;
+    private static final boolean DEFAULT_SIMPLE_MODE = false;
 
     private AppPreferences(@NonNull Context context) {
         prefs = context.getApplicationContext()
@@ -121,6 +123,16 @@ public final class AppPreferences {
 
     public void setUiScale(float scale) {
         prefs.edit().putFloat(KEY_UI_SCALE, scale).apply();
+    }
+
+    // ── Simple Mode ──────────────────────────────────────────────────────────
+
+    public boolean isSimpleModeEnabled() {
+        return prefs.getBoolean(KEY_SIMPLE_MODE, DEFAULT_SIMPLE_MODE);
+    }
+
+    public void setSimpleModeEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_SIMPLE_MODE, enabled).apply();
     }
 
     // ── Bulk operations ──────────────────────────────────────────────────────

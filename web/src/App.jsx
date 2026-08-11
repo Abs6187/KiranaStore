@@ -4,6 +4,7 @@ import ProductCard from './components/ProductCard';
 import AddProductModal from './components/AddProductModal';
 import PriceHistoryModal from './components/PriceHistoryModal';
 import VoiceFab from './components/VoiceFab';
+import PwaInstallWidget from './components/PwaInstallWidget';
 import SettingsModal from './components/SettingsModal';
 import { subscribeProducts } from './services/productService';
 import { subscribePriceHistory } from './services/priceHistoryService';
@@ -21,6 +22,23 @@ export default function App() {
   const [historyModalProduct, setHistoryModalProduct] = useState(null);
   const [isAllHistoryOpen, setIsAllHistoryOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Simple / Elder Mode preference
+  const [simpleMode, setSimpleMode] = useState(() => {
+    try {
+      return localStorage.getItem('kirana-simple-mode') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kirana-simple-mode', String(simpleMode));
+    } catch {
+      // ignore storage errors (private browsing)
+    }
+  }, [simpleMode]);
 
   useEffect(() => {
     // Realtime Firestore Subscription for Products
@@ -66,15 +84,17 @@ export default function App() {
   const pinnedCount = products.filter(p => p.isPinned).length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className={`min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans ${simpleMode ? 'simple-mode' : ''}`}>
       {/* Navbar Header */}
       <Navbar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onOpenAddModal={() => setIsAddModalOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onToggleSimpleMode={() => setSimpleMode((v) => !v)}
         totalCount={products.length}
         pinnedCount={pinnedCount}
+        simpleMode={simpleMode}
       />
 
       {/* Main Container */}
@@ -152,19 +172,24 @@ export default function App() {
                 key={product.id}
                 product={product}
                 onOpenHistory={(p) => setHistoryModalProduct(p)}
+                simpleMode={simpleMode}
               />
             ))}
           </div>
         )}
       </main>
 
+      {/* Floating Left PWA Install Widget */}
+      <PwaInstallWidget simpleMode={simpleMode} />
+
       {/* Floating Action Button for Voice AI Commands */}
-      <VoiceFab products={products} />
+      <VoiceFab products={products} simpleMode={simpleMode} />
 
       {/* Add Product Modal */}
       <AddProductModal 
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
+        simpleMode={simpleMode}
       />
 
       {/* Single Product Price Audit Modal */}
@@ -191,6 +216,8 @@ export default function App() {
       <SettingsModal 
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+        simpleMode={simpleMode}
+        onToggleSimpleMode={() => setSimpleMode((v) => !v)}
       />
     </div>
   );

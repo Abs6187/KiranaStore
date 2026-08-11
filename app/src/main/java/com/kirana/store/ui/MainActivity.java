@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -107,6 +108,12 @@ public class MainActivity extends AppCompatActivity implements VoiceManager.Voic
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             int navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
             binding.bottomNavigation.setPadding(0, 0, 0, navBar);
+            if (binding.fabVoice.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
+                CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) binding.fabVoice.getLayoutParams();
+                int baseBottomNavHeight = getResources().getDimensionPixelSize(R.dimen.bottom_nav_height);
+                lp.bottomMargin = baseBottomNavHeight + navBar + 16;
+                binding.fabVoice.setLayoutParams(lp);
+            }
             return insets;
         });
 

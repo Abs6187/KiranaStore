@@ -159,6 +159,7 @@ public class SettingsFragment extends Fragment {
     private void setupToggles() {
         binding.switchVoiceAi.setChecked(prefs.isVoiceAiEnabled());
         binding.switchScanner.setChecked(prefs.isScannerEnabled());
+        binding.switchSimpleMode.setChecked(prefs.isSimpleModeEnabled());
 
         binding.switchVoiceAi.setOnCheckedChangeListener((btn, checked) -> {
             prefs.setVoiceAiEnabled(checked);
@@ -171,6 +172,13 @@ public class SettingsFragment extends Fragment {
             prefs.setScannerEnabled(checked);
             Toast.makeText(requireContext(),
                 checked ? "Scanner enabled" : "Scanner disabled",
+                Toast.LENGTH_SHORT).show();
+        });
+
+        binding.switchSimpleMode.setOnCheckedChangeListener((btn, checked) -> {
+            prefs.setSimpleModeEnabled(checked);
+            Toast.makeText(requireContext(),
+                checked ? "Simple Mode enabled" : "Simple Mode disabled",
                 Toast.LENGTH_SHORT).show();
         });
     }

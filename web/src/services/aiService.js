@@ -85,7 +85,7 @@ export const processVoiceCommand = async (userTranscript, existingProducts = [])
   try {
     const catalogList = existingProducts.map(p => `${p.name} (₹${p.salesPrice}/${p.unit || 'unit'})`).join(", ");
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -126,5 +126,48 @@ export const processVoiceCommand = async (userTranscript, existingProducts = [])
       action: "unknown",
       replyText: "Samajh nahi aaya. Kripya dubara bole."
     };
+  }
+};
+
+/**
+ * Fetch AI item suggestions & spelling corrections using Gemini 2.0 Flash
+ */
+export const getAIProductSuggestions = async (queryText) => {
+  if (!queryText || queryText.trim().length < 2) return [];
+
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+  if (!apiKey) return [];
+
+  const PROMPT = `
+You are a smart Kirana store inventory assistant in India.
+The user is typing a product name: "${queryText.trim()}". It might contain typos, misspellings, phonetics (Hindi/English), or incomplete brand names (e.g., "att" -> "Aashirvaad Atta", "musard" -> "Mustard Oil", "tata s" -> "Tata Salt").
+
+Provide up to 4 corrected, standard Indian Kirana store item name suggestions.
+Return strictly valid JSON array only (no markdown, no code blocks):
+[
+  { "name": "Corrected Product Name", "unit": "kg|litre|packet|piece|gm", "category": "General|Oils & Ghee|Grains & Pulses|Spices & Salt|Snacks & Tea" }
+]
+`;
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: PROMPT }] }]
+      })
+    });
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
+    rawText = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+
+    const parsed = JSON.parse(rawText);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (err) {
+    console.warn("AI suggestion fetch failed:", err);
+    return [];
   }
 };

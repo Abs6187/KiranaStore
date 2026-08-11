@@ -1,19 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, Package, Tag, DollarSign, Sparkles, Loader2 } from 'lucide-react';
-import { addProduct } from '../services/productService';
-import { announce, speakText } from '../services/voiceService';
+import { X, Check, Sparkles, Mic, AlertTriangle, Edit3, Loader2, Package } from 'lucide-react';
+import { addProduct, updateSalesPrice } from '../services/productService';
+import { speakText } from '../services/voiceService';
 import { getAIProductSuggestions } from '../services/aiService';
 
-export default function AddProductModal({ isOpen, onClose, simpleMode = false }) {
+export default function VoiceConfirmModal({ isOpen, onClose, parsedData, simpleMode = false }) {
   const [name, setName] = useState('');
   const [salesPrice, setSalesPrice] = useState('');
   const [purchasePrice, setPurchasePrice] = useState('');
   const [unit, setUnit] = useState('kg');
   const [category, setCategory] = useState('General');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const nameInputRef = useRef(null);
+
+  useEffect(() => {
+    if (parsedData) {
+      setName(parsedData.productName || parsedData.targetProduct?.name || '');
+      setSalesPrice(parsedData.price || parsedData.targetProduct?.salesPrice || '');
+      setPurchasePrice(parsedData.purchasePrice || parsedData.targetProduct?.purchasePrice || '');
+      setUnit(parsedData.unit || parsedData.targetProduct?.unit || 'kg');
+      setCategory(parsedData.category || parsedData.targetProduct?.category || 'General');
+    }
+  }, [parsedData]);
 
   useEffect(() => {
     if (!name.trim() || name.trim().length < 2) {
@@ -31,6 +41,8 @@ export default function AddProductModal({ isOpen, onClose, simpleMode = false })
     return () => clearTimeout(timer);
   }, [name]);
 
+  if (!isOpen || !parsedData) return null;
+
   const selectSuggestion = (item) => {
     setName(item.name);
     if (item.unit) setUnit(item.unit);
@@ -44,9 +56,7 @@ export default function AddProductModal({ isOpen, onClose, simpleMode = false })
     }, 50);
   };
 
-  if (!isOpen) return null;
-
-  const handleSubmit = async (e) => {
+  const handleConfirm = async (e) => {
     e.preventDefault();
     if (!name.trim()) {
       speakText("Kripya product ka naam dhaley.");
@@ -57,43 +67,55 @@ export default function AddProductModal({ isOpen, onClose, simpleMode = false })
       return;
     }
 
-    // Voice alert for Selling Price <= Purchase Price
+    // Voice warning when Selling Price <= Purchase Price
     if (Number(salesPrice) > 0 && Number(purchasePrice) > 0 && Number(salesPrice) <= Number(purchasePrice)) {
       speakText("Selling price khareed daam se kam hai! Loss hoga.");
     }
 
     setIsSubmitting(true);
     try {
-      await addProduct({
-        name,
-        salesPrice,
-        purchasePrice: purchasePrice || 0,
-        unit,
-        category
-      });
-      announce(`${name.trim()} ₹${salesPrice} mein add ho gaya`, simpleMode);
-      setName('');
-      setSalesPrice('');
-      setPurchasePrice('');
-      setSuggestions([]);
+      if (parsedData.action === 'update_price' && parsedData.targetProduct) {
+        await updateSalesPrice(
+          parsedData.targetProduct.id,
+          name.trim(),
+          parsedData.targetProduct.salesPrice,
+          parseFloat(salesPrice),
+          "Voice Command (Confirmed)"
+        );
+        speakText(`${name.trim()} ka naya price ₹${salesPrice} confirm ho gaya`);
+      } else {
+        await addProduct({
+          name: name.trim(),
+          salesPrice: parseFloat(salesPrice),
+          purchasePrice: purchasePrice ? parseFloat(purchasePrice) : 0,
+          unit,
+          category
+        });
+        speakText(`${name.trim()} ₹${salesPrice} mein catalogue mein save ho gaya`);
+      }
       onClose();
     } catch (err) {
-      console.error("Failed to add product:", err);
+      console.error("Failed to commit voice command:", err);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const isLossWarning = Number(salesPrice) > 0 && Number(purchasePrice) > 0 && Number(salesPrice) <= Number(purchasePrice);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-md rounded-2xl glass-panel p-6 border border-slate-800 shadow-2xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="w-full max-w-md rounded-2xl glass-panel p-6 border border-emerald-500/40 shadow-2xl relative bg-slate-900/95">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
-              <Package className="w-5 h-5" />
+            <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
+              <Sparkles className="w-5 h-5" />
             </div>
-            <h2 className="text-lg font-bold text-slate-100">Add New Product</h2>
+            <div>
+              <h2 className="text-base font-bold text-slate-100">Confirm Voice Input</h2>
+              <p className="text-[11px] text-slate-400">Review & edit before saving to database</p>
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -103,35 +125,50 @@ export default function AddProductModal({ isOpen, onClose, simpleMode = false })
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Raw Voice Transcript Box */}
+        <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 mb-4 flex items-start gap-2.5">
+          <Mic className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">
+              Heard Voice Command:
+            </span>
+            <p className="text-xs font-semibold text-emerald-300 italic">
+              "{parsedData.rawTranscript || parsedData.replyText}"
+            </p>
+          </div>
+        </div>
+
+        {/* Confirmation Form */}
+        <form onSubmit={handleConfirm} className="space-y-4">
+          {/* Product Name & AI Spell Suggestions */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                Product Name *
+                Product Name (Edit/Correct) *
               </label>
               {isLoadingSuggestions && (
                 <span className="flex items-center gap-1 text-[11px] text-emerald-400 font-medium">
-                  <Loader2 className="w-3 h-3 animate-spin" /> Gemini AI checking...
+                  <Loader2 className="w-3 h-3 animate-spin" /> Checking spelling...
                 </span>
               )}
             </div>
-            <input
-              ref={nameInputRef}
-              type="text"
-              required
-              placeholder="e.g. Mustard Oil 1L, Basmati Rice 5kg"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-            />
+            <div className="relative">
+              <input
+                ref={nameInputRef}
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm font-bold text-slate-100 focus:outline-none focus:border-emerald-500"
+              />
+            </div>
 
-            {/* Gemini AI Item Suggestions & Spelling Auto-Correction */}
+            {/* AI Suggestions Chips */}
             {suggestions.length > 0 && (
-              <div className="mt-2 p-2.5 rounded-xl bg-slate-900/90 border border-emerald-500/30 space-y-1.5">
+              <div className="mt-2 p-2.5 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
                   <Sparkles className="w-3.5 h-3.5" />
-                  Gemini AI Corrected Suggestions (Click to auto-fill):
+                  Gemini AI Corrected Spelling Suggestions (Click to auto-fill):
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {suggestions.map((item, index) => (
@@ -154,6 +191,7 @@ export default function AddProductModal({ isOpen, onClose, simpleMode = false })
             )}
           </div>
 
+          {/* Pricing Fields */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
@@ -163,13 +201,10 @@ export default function AddProductModal({ isOpen, onClose, simpleMode = false })
                 type="number"
                 step="0.01"
                 required
-                placeholder="175"
                 value={salesPrice}
                 onChange={(e) => setSalesPrice(e.target.value)}
-                className={`w-full bg-slate-900 border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none ${
-                  Number(salesPrice) > 0 && Number(purchasePrice) > 0 && Number(salesPrice) <= Number(purchasePrice)
-                    ? 'border-amber-500 text-amber-400 focus:border-amber-400'
-                    : 'border-slate-800 text-emerald-400 focus:border-emerald-500'
+                className={`w-full bg-slate-950 border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none ${
+                  isLossWarning ? 'border-amber-500 text-amber-400' : 'border-slate-800 text-emerald-400 focus:border-emerald-500'
                 }`}
               />
             </div>
@@ -183,23 +218,25 @@ export default function AddProductModal({ isOpen, onClose, simpleMode = false })
                 placeholder="150"
                 value={purchasePrice}
                 onChange={(e) => setPurchasePrice(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
 
-          {/* Hindi Price Warning Alert (Selling Price <= Purchase Price) */}
-          {Number(salesPrice) > 0 && Number(purchasePrice) > 0 && Number(salesPrice) <= Number(purchasePrice) && (
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs space-y-1 animate-in fade-in duration-200">
+          {/* Loss Warning Banner */}
+          {isLossWarning && (
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-amber-400">
-                <span>⚠️ Warning (बिक्री मूल्य चेतावनी):</span>
+                <AlertTriangle className="w-4 h-4" />
+                <span>Chetaavani (चेतावनी):</span>
               </div>
               <p className="text-[11px] leading-relaxed text-amber-200">
-                Selling price (₹{salesPrice}) khareed daam (₹{purchasePrice}) se kam ya barabar hai! <strong className="text-amber-400">Nuksan (Loss: ₹{(Number(purchasePrice) - Number(salesPrice)).toFixed(2)}) ho sakta hai.</strong>
+                Selling price (₹{salesPrice}) khareed daam (₹{purchasePrice}) se kam hai! <strong className="text-amber-400">Loss: ₹{(Number(purchasePrice) - Number(salesPrice)).toFixed(2)}</strong>
               </p>
             </div>
           )}
 
+          {/* Unit & Category */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
@@ -208,7 +245,7 @@ export default function AddProductModal({ isOpen, onClose, simpleMode = false })
               <select
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
               >
                 <option value="kg">kg</option>
                 <option value="litre">litre</option>
@@ -224,7 +261,7 @@ export default function AddProductModal({ isOpen, onClose, simpleMode = false })
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
               >
                 <option value="General">General</option>
                 <option value="Oils & Ghee">Oils & Ghee</option>
@@ -235,21 +272,22 @@ export default function AddProductModal({ isOpen, onClose, simpleMode = false })
             </div>
           </div>
 
+          {/* Actions */}
           <div className="pt-3 flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-sm font-medium"
+              className="px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
             >
-              <Plus className="w-4 h-4" />
-              {isSubmitting ? 'Adding...' : 'Add Product'}
+              <Check className="w-4 h-4 stroke-[3]" />
+              {isSubmitting ? 'Saving to Database...' : 'Confirm & Save to DB'}
             </button>
           </div>
         </form>

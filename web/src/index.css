@@ -87,6 +87,33 @@ input, select {
   animation: pulse-glow 1.5s infinite !important;
 }
 
+/* Simple / Elder Mode utilities */
+.simple-mode {
+  --simple-font: 1.125;
+}
+
+.simple-mode .simple-card {
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+}
+
+.simple-mode input,
+.simple-mode select,
+.simple-mode button {
+  min-height: 2.75rem;
+}
+
+.simple-mode nav button,
+.simple-mode nav input {
+  min-height: 3rem;
+}
+
+@media (max-width: 640px) {
+  .simple-mode nav input::placeholder {
+    font-size: 1rem;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

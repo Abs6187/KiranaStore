@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { X, Wifi, Sparkles, Shield, Cpu, CheckCircle } from 'lucide-react';
+import { X, Wifi, Sparkles, Shield, Cpu, CheckCircle, Users } from 'lucide-react';
 import { processVoiceCommand } from '../services/aiService';
 
-export default function SettingsModal({ isOpen, onClose }) {
+export default function SettingsModal({ isOpen, onClose, simpleMode, onToggleSimpleMode }) {
   const [testResult, setTestResult] = useState(null);
   const [isTesting, setIsTesting] = useState(false);
 
@@ -79,6 +79,33 @@ export default function SettingsModal({ isOpen, onClose }) {
               {testResult.message}
             </div>
           )}
+
+          {/* Simple / Elder Mode Toggle */}
+          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
+                <Users className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  Simple / Elder Mode
+                </div>
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  Bigger buttons, spoken feedback, and simple price controls
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={onToggleSimpleMode}
+              className={`relative w-12 h-7 rounded-full transition-colors ${simpleMode ? 'bg-emerald-500' : 'bg-slate-700'}`}
+              aria-pressed={simpleMode}
+              title={simpleMode ? "Disable Simple Mode" : "Enable Simple Mode"}
+            >
+              <span
+                className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow transition-transform ${simpleMode ? 'translate-x-5' : 'translate-x-0'}`}
+              />
+            </button>
+          </div>
 
           {/* Diagnostics Info */}
           <div className="pt-3 border-t border-slate-800 space-y-2 text-xs">
